@@ -4,10 +4,10 @@
 #include "../adc_manager/adc_manager.h"
 
 static const char *TAG = "LDR_DRIVER";
-static int ldr_adc_channel = -1;
+static adc_channel_t ldr_adc_channel = -1;
 static bool s_initialized = false;
 
-esp_err_t ldr_init(int adc_channel)
+esp_err_t ldr_init(adc_channel_t adc_channel)
 {
     ldr_adc_channel = adc_channel;
 

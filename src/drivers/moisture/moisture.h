@@ -1,6 +1,7 @@
 #ifndef MOISTURE_H
 #define MOISTURE_H
 
+#include "driver/adc.h"
 #include "esp_err.h"
 
 /**
@@ -9,7 +10,7 @@
  * This function sets up the ADC unit and channel for reading the moisture sensor.
  * It should be called before any calls to `moisture_read_percent()`.
  */
-esp_err_t moisture_init(int adc_channel);
+esp_err_t moisture_init(adc_channel_t adc_channel);
 
 /**
  * @brief Read moisture level as a percentage from the moisture sensor

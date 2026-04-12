@@ -12,11 +12,11 @@
 #define PING_TIMEOUT 6000
 
 static const char *TAG = "ULTRASONIC";
-static int ultrasonic_trig_pin = -1;
-static int ultrasonic_echo_pin = -1;
+static gpio_num_t ultrasonic_trig_pin = -1;
+static gpio_num_t ultrasonic_echo_pin = -1;
 static bool s_initialized = false;
 
-esp_err_t ultrasonic_init(int trig_pin, int echo_pin)
+esp_err_t ultrasonic_init(gpio_num_t trig_pin, gpio_num_t echo_pin)
 {
     ultrasonic_trig_pin = trig_pin;
     ultrasonic_echo_pin = echo_pin;

@@ -4,10 +4,10 @@
 #include "../adc_manager/adc_manager.h"
 
 static const char *TAG = "MOISTURE_DRIVER";
-static int moisture_adc_channel = -1;
+static adc_channel_t moisture_adc_channel = -1;
 static bool s_initialized = false;
 
-esp_err_t moisture_init(int adc_channel)
+esp_err_t moisture_init(adc_channel_t adc_channel)
 {
     moisture_adc_channel = adc_channel;
 

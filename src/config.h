@@ -1,11 +1,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include "driver/gpio.h"
+#include "driver/adc.h"
+
 // GPIO pins
-#define DHT11_GPIO_PIN 4
-#define PUMP_GPIO_PIN 20
-#define ULTRASONIC_TRIG_PIN 2
-#define ULTRASONIC_ECHO_PIN 3
+#define DHT11_GPIO_PIN GPIO_NUM_4
+#define PUMP_GPIO_PIN GPIO_NUM_20
+#define ULTRASONIC_TRIG_PIN GPIO_NUM_2
+#define ULTRASONIC_ECHO_PIN GPIO_NUM_3
 
 // ADC channels
 #define LDR_ADC_CHANNEL ADC_CHANNEL_2
