@@ -4,9 +4,11 @@ idf_component_register(
         "drivers/adc_manager/adc_manager.c"
         "drivers/ldr/ldr.c"
         "drivers/moisture/moisture.c"
+        "drivers/ultrasonic/ultrasonic.c"
     INCLUDE_DIRS
         "."
         "drivers/adc_manager"
         "drivers/ldr"
         "drivers/moisture"
+        "drivers/ultrasonic"
 )
