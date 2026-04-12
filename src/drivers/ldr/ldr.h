@@ -9,7 +9,7 @@
  * This function sets up the ADC unit and channel for reading the LDR sensor.
  * It should be called before any calls to `ldr_read_percent()`.
  */
-esp_err_t ldr_init(void);
+esp_err_t ldr_init(int adc_channel);
 
 /**
  * @brief Read light level as a percentage from the LDR sensor
