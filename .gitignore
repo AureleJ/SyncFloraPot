@@ -1,6 +1,6 @@
 .pio
 .vscode/
 include/
-lib/
+build/
 test/
 sdkconfig.esp32-c3-devkitm-1
