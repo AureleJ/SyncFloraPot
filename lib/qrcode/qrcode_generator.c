@@ -35,7 +35,7 @@
 
 // @todo: Code a optimiser d'avantage
 
-#include "qrcode.h"
+#include "qrcode_generator.h"
 #include <stdlib.h>
 #include <string.h>
 
