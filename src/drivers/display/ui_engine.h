@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "easing.h"
 
 typedef enum Anchor
 {
@@ -24,14 +25,6 @@ typedef enum AnimationType
     TRANSLATE_X,
     TRANSLATE_Y
 } AnimationType;
-
-typedef enum EasingType
-{
-    LINEAR,
-    EASE_IN,
-    EASE_OUT,
-    EASE_IN_OUT
-} EasingType;
 
 typedef struct BaseElement
 {
@@ -83,7 +76,6 @@ typedef struct Animation
     int delay_ms;
     int fromValue;
     int toValue;
-    int currentValue;
     bool loop;
     EasingType easing;
 } Animation;

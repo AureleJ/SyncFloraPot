@@ -330,6 +330,10 @@ void ui_render()
 void ui_clear()
 {
     display_clear();
+    /* for (int i = 0; i < element_count; i++)
+    {
+        display_registry[i]->dirty = true;
+    } */
     display_update();
 }
 
@@ -408,7 +412,6 @@ Animation *ui_animate_element(BaseElement *element, AnimationType animation, int
     anim->canStart = false;
     anim->complete = false;
     anim->lastUpdate_ms = 0;
-    anim->currentValue = fromValue;
 
     return anim;
 }
@@ -451,7 +454,7 @@ void ui_update_animations(uint32_t current_time_ms)
             {
                 float progress = (float)(elapsed - anim->delay_ms) / anim->duration_ms;
 
-                progress = progress * progress * progress * progress; // EASE_IN
+                progress = apply_easing(progress, anim->easing);
 
                 if (progress >= 1.0f)
                 {
