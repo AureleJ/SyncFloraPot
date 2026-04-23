@@ -9,11 +9,12 @@
 static const char *TAG = "DISPLAY";
 
 // Can be increased if needed
-#define MAX_UI_ELEMENTS 10 
+#define MAX_UI_ELEMENTS 10
 #define MAX_TEXT_ELEMENTS 10
 #define MAX_SHAPE_ELEMENTS 10
 #define MAX_QR_ELEMENTS 5
 #define MAX_ICON_ELEMENTS 5
+#define MAX_ANIMATIONS 5
 
 static BaseElement *display_registry[MAX_UI_ELEMENTS];
 static int element_count = 0;
@@ -29,6 +30,9 @@ static int qr_pool_index = 0;
 
 static IconElement icon_pool[MAX_ICON_ELEMENTS];
 static int icon_pool_index = 0;
+
+static Animation animation_pool[MAX_ANIMATIONS];
+static int animation_pool_index = 0;
 
 static void draw_text_element(BaseElement *self);
 static void draw_shape_element(BaseElement *self);
@@ -60,6 +64,7 @@ TextElement *ui_create_text(int x, int y, int w, int h, Anchor xAnchor, Anchor y
     el->base.border = false;
     el->base.dirty = true;
     el->base.render = draw_text_element;
+    el->base.visible = true;
     el->text = text;
     el->color = color;
 
@@ -86,6 +91,7 @@ ShapeElement *ui_create_shape(int x, int y, int w, int h, Anchor xAnchor, Anchor
     el->base.border = false;
     el->base.dirty = true;
     el->base.render = draw_shape_element;
+    el->base.visible = true;
     el->color = color;
 
     display_registry[element_count++] = (BaseElement *)el;
@@ -111,6 +117,7 @@ QRCodeElement *ui_create_qr_code(int x, int y, int w, int h, Anchor xAnchor, Anc
     el->base.border = false;
     el->base.dirty = true;
     el->base.render = draw_qr_code_element;
+    el->base.visible = true;
     el->data = data;
 
     display_registry[element_count++] = (BaseElement *)el;
@@ -136,6 +143,7 @@ IconElement *ui_create_icon(int x, int y, int w, int h, Anchor xAnchor, Anchor y
     el->base.border = false;
     el->base.dirty = true;
     el->base.render = draw_icon_element;
+    el->base.visible = true;
     el->iconData = iconData;
 
     display_registry[element_count++] = (BaseElement *)el;
@@ -143,7 +151,18 @@ IconElement *ui_create_icon(int x, int y, int w, int h, Anchor xAnchor, Anchor y
     return el;
 }
 
+void ui_set_element_invisible(BaseElement *self)
+{
+    self->visible = false;
+}
+
 /* ELEMENT RENDERERS */
+
+void ui_add_icon_to_text(TextElement *textEl, const uint8_t *iconData, int gap) {
+    textEl->iconData = iconData;
+    textEl->iconGap = gap;
+    textEl->base.dirty = true; 
+}
 
 static void draw_text_element(BaseElement *self)
 {
@@ -181,6 +200,18 @@ static void draw_text_element(BaseElement *self)
     else if (self->yAnchor == BOTTOM)
     {
         y = self->y + self->h - text_height;
+    }
+
+    if (el->iconData != NULL) {
+        for (int i = 0; i < 8; i++) {
+            uint8_t line = el->iconData[i];
+            for (int j = 0; j < 8; j++) {
+                if (line & (1 << j)) {
+                    display_set_pixel(x + j, y + i, true);
+                }
+            }
+        }
+        x += 8 + el->iconGap; 
     }
 
     ui_draw_string(el->text, x, y, el->color);
@@ -268,22 +299,32 @@ static void draw_shape_element(BaseElement *self)
 
 void ui_render()
 {
-    int dirtyCount = 0;
+    bool needs_redraw = false;
+
     for (int i = 0; i < element_count; i++)
     {
-        if (display_registry[i]->render && display_registry[i]->dirty)
+        if (display_registry[i]->dirty)
         {
-            ui_draw_shape(display_registry[i]->x, display_registry[i]->y, display_registry[i]->w, display_registry[i]->h, false);
-            display_registry[i]->render(display_registry[i]);
-            display_registry[i]->dirty = false;
-            dirtyCount++;
+            needs_redraw = true;
+            break;
         }
     }
 
-    if (dirtyCount > 0)
+    if (!needs_redraw)
+        return;
+
+    display_clear();
+
+    for (int i = 0; i < element_count; i++)
     {
-        display_update();
+        if (display_registry[i]->render && display_registry[i]->visible)
+        {
+            display_registry[i]->render(display_registry[i]);
+            display_registry[i]->dirty = false;
+        }
     }
+
+    display_update();
 }
 
 void ui_clear()
@@ -342,5 +383,95 @@ static void ui_draw_border(int x, int y, int w, int h)
     {
         display_set_pixel(x, y + j, true);
         display_set_pixel(x + w - 1, y + j, true);
+    }
+}
+
+/* ANIMATION */
+
+Animation *ui_animate_element(BaseElement *element, AnimationType animation, int duration_ms, int delay_ms, int fromValue, int toValue, bool loop, EasingType easing)
+{
+    if (animation_pool_index >= MAX_ANIMATIONS)
+    {
+        ESP_LOGE(TAG, "Max animations reached, cannot create more");
+        return NULL;
+    }
+
+    Animation *anim = &animation_pool[animation_pool_index++];
+    anim->type = animation;
+    anim->duration_ms = duration_ms;
+    anim->delay_ms = delay_ms;
+    anim->fromValue = fromValue;
+    anim->toValue = toValue;
+    anim->loop = loop;
+    anim->target = element;
+    anim->easing = easing;
+    anim->canStart = false;
+    anim->complete = false;
+    anim->lastUpdate_ms = 0;
+    anim->currentValue = fromValue;
+
+    return anim;
+}
+
+void ui_start_animation(Animation *anim)
+{
+    anim->canStart = true;
+    anim->lastUpdate_ms = 0;
+    anim->complete = false;
+}
+
+bool ui_is_animation_complete(Animation *anim)
+{
+    return anim->complete;
+}
+
+void ui_update_animations(uint32_t current_time_ms)
+{
+    for (int i = 0; i < animation_pool_index; i++)
+    {
+        Animation *anim = &animation_pool[i];
+        if (!anim->canStart || anim->complete)
+        {
+            if (anim->loop && anim->complete)
+            {
+                ui_start_animation(anim);
+            }
+
+            continue;
+        }
+
+        if (anim->lastUpdate_ms == 0)
+        {
+            anim->lastUpdate_ms = current_time_ms;
+        }
+        else
+        {
+            int elapsed = current_time_ms - anim->lastUpdate_ms;
+            if (elapsed >= anim->delay_ms)
+            {
+                float progress = (float)(elapsed - anim->delay_ms) / anim->duration_ms;
+
+                progress = progress * progress * progress * progress; // EASE_IN
+
+                if (progress >= 1.0f)
+                {
+                    progress = 1.0f;
+                    anim->complete = true;
+                }
+
+                int newValue = anim->fromValue + (int)((anim->toValue - anim->fromValue) * progress);
+
+                if (anim->type == TRANSLATE_X)
+                {
+                    anim->target->x = newValue;
+                }
+                else if (anim->type == TRANSLATE_Y)
+                {
+                    anim->target->y = newValue;
+                }
+
+                anim->target->dirty = true;
+            }
+        }
     }
 }
