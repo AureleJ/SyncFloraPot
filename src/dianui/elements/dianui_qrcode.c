@@ -1,25 +1,24 @@
-#include "element.h"
-#include "qrcode.h"
-#include "../core/engine_private.h"
-#include "../core/renderer.h"
+#include "dianui_element.h"
+#include "dianui_qrcode.h"
+#include "../core/dianui_engine_private.h"
+#include "../core/dianui_renderer.h"
+#include "../core/dianui_config.h"
 #include <string.h>
 #include "qrcode_generator.h"
 
-#define MAX_QR_ELEMENTS 5
-
-static QRCodeElement qr_pool[MAX_QR_ELEMENTS];
+static DianUI_QRCodeElement qr_pool[DIANUI_MAX_QR];
 static int qr_pool_index = 0;
 
-static void draw_qr_code_element(BaseElement *self);
+static void draw_qr_code_element(DianUI_BaseElement *self);
 
-QRCodeElement *ui_create_qr_code(int x, int y, int w, int h, Anchor xAnchor, Anchor yAnchor, const char *data)
+DianUI_QRCodeElement *dianui_create_qr_code(int x, int y, int w, int h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, const char *data)
 {
-    if (qr_pool_index >= MAX_QR_ELEMENTS)
+    if (qr_pool_index >= DIANUI_MAX_QR)
     {
         return NULL;
     }
 
-    QRCodeElement *el = &qr_pool[qr_pool_index++];
+    DianUI_QRCodeElement *el = &qr_pool[qr_pool_index++];
     el->base.x = x;
     el->base.y = y;
     el->base.w = w;
@@ -32,14 +31,14 @@ QRCodeElement *ui_create_qr_code(int x, int y, int w, int h, Anchor xAnchor, Anc
     el->base.visible = true;
     el->data = data;
 
-    engine_register_element((BaseElement *)el);
+    dianui_engine_register((DianUI_BaseElement *)el);
 
     return el;
 }
 
-static void draw_qr_code_element(BaseElement *self)
+static void draw_qr_code_element(DianUI_BaseElement *self)
 {
-    QRCodeElement *el = (QRCodeElement *)self;
+    DianUI_QRCodeElement *el = (DianUI_QRCodeElement *)self;
 
     QRCode qrcode;
     qrcode_init(&qrcode, el->data);
@@ -50,20 +49,20 @@ static void draw_qr_code_element(BaseElement *self)
     int text_height = qrcode.size * 2;
     int text_width = qrcode.size * 2;
 
-    if (self->xAnchor == CENTER)
+    if (self->xAnchor == DIANUI_CENTER)
     {
         oldX = self->x + (self->w - text_width) / 2;
     }
-    else if (self->xAnchor == RIGHT)
+    else if (self->xAnchor == DIANUI_RIGHT)
     {
         oldX = self->x + self->w - text_width;
     }
 
-    if (self->yAnchor == CENTER)
+    if (self->yAnchor == DIANUI_CENTER)
     {
         oldY = self->y + (self->h - text_height) / 2;
     }
-    else if (self->yAnchor == BOTTOM)
+    else if (self->yAnchor == DIANUI_BOTTOM)
     {
         oldY = self->y + self->h - text_height;
     }
@@ -77,10 +76,10 @@ static void draw_qr_code_element(BaseElement *self)
                 int px = oldX + x * 2;
                 int py = oldY + y * 2;
 
-                ui_draw_pixel(px, py, WHITE);
-                ui_draw_pixel(px + 1, py, WHITE);
-                ui_draw_pixel(px, py + 1, WHITE);
-                ui_draw_pixel(px + 1, py + 1, WHITE);
+                dianui_draw_pixel(px, py, DIANUI_WHITE);
+                dianui_draw_pixel(px + 1, py, DIANUI_WHITE);
+                dianui_draw_pixel(px, py + 1, DIANUI_WHITE);
+                dianui_draw_pixel(px + 1, py + 1, DIANUI_WHITE);
             }
         }
     }
