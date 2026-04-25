@@ -31,4 +31,9 @@
 #define DIANUI_MAX_SCENES 5
 #endif
 
+/* Enable or disable logging (set to 0 to disable) */
+#ifndef DIANUI_LOG_ENABLED
+#define DIANUI_LOG_ENABLED 1
+#endif
+
 #endif // DIANUI_CONFIG_H

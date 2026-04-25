@@ -28,4 +28,17 @@ DianUI_TextElement *dianui_create_text(int x, int y, int w, int h, DianUI_Anchor
  */
 void dianui_add_icon_to_text(DianUI_TextElement *textEl, const uint8_t *iconData, int iconSize, int gap);
 
+/**
+ * @brief Update the text of a text element.
+ *
+ * @param textEl Pointer to the text element.
+ * @param newText Pointer to the new string to display (must remain valid while element exists).
+ */
+void dianui_update_text(DianUI_TextElement *textEl, const char *newText);
+
+/**
+ * @brief Reset the text element pool.
+ */
+void dianui_text_reset();
+
 #endif // DIANUI_TEXT_H

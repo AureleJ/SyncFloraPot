@@ -1,6 +1,6 @@
-#include "dianui_element.h"
 #include "dianui_shape.h"
 #include "../core/dianui_engine_private.h"
+#include "../core/dianui_log.h"
 #include "../core/dianui_renderer.h"
 #include "../core/dianui_config.h"
 #include <string.h>
@@ -37,6 +37,12 @@ DianUI_ShapeElement *dianui_create_shape(int x, int y, int w, int h, DianUI_Anch
 
 static void draw_shape_element(DianUI_BaseElement *self)
 {
+    if (!self)
+    {
+        DIANUI_LOGE("DianUI element is NULL.");
+        return;
+    }
+
     DianUI_ShapeElement *el = (DianUI_ShapeElement *)self;
 
     dianui_draw_shape(self->x, self->y, self->w, self->h, el->color);
@@ -45,4 +51,9 @@ static void draw_shape_element(DianUI_BaseElement *self)
     {
         dianui_draw_border(self->x, self->y, self->w, self->h, el->color);
     }
+}
+
+void dianui_shape_reset()
+{
+    shape_pool_index = 0;
 }

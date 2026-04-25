@@ -21,4 +21,9 @@ void dianui_render(void);
  */
 void dianui_clear(void);
 
+/**
+ * @brief Reset the engine state, clearing all registered elements.
+ */
+void dianui_reset(void);
+
 #endif // DIANUI_ENGINE_H

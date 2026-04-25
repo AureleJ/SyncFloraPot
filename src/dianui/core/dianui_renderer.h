@@ -6,13 +6,6 @@
 #include "../assets/dianui_font.h"
 
 /**
- * @brief Initialize the renderer with a HAL implementation.
- *
- * @param hal_ptr Pointer to the HAL implementation.
- */
-void dianui_renderer_init(DianUI_HAL *hal_ptr);
-
-/**
  * @brief Internal drawing primitives.
  *
  * These functions are used by the engine to draw various UI elements.

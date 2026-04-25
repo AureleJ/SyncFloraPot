@@ -1,17 +1,17 @@
+#include "dianui_log.h"
 #include "dianui_renderer.h"
+#include "dianui_engine_private.h"
 #include <string.h>
-
-static DianUI_HAL *hal = NULL;
-
-void dianui_renderer_init(DianUI_HAL *hal_ptr)
-{
-    hal = hal_ptr;
-}
 
 void dianui_draw_char(char c, int x, int y, DianUI_Color color)
 {
     if (c >= DIANUI_MAX_CHAR)
+    {
+        DIANUI_LOGE("Character is out of bounds for the font. Skipping.");
         return;
+    }
+
+    DianUI_HAL *hal = dianui_engine_get_hal();
 
     const uint8_t *char_bitmap = font[(int)c];
 
@@ -34,6 +34,8 @@ void dianui_draw_string(const char *str, int x, int y, DianUI_Color color)
 
 void dianui_draw_shape(int x, int y, int w, int h, DianUI_Color color)
 {
+    DianUI_HAL *hal = dianui_engine_get_hal();
+
     for (int j = 0; j < h; j++)
         for (int i = 0; i < w; i++)
             hal->set_pixel(x + i, y + j, color);
@@ -41,6 +43,8 @@ void dianui_draw_shape(int x, int y, int w, int h, DianUI_Color color)
 
 void dianui_draw_border(int x, int y, int w, int h, DianUI_Color color)
 {
+    DianUI_HAL *hal = dianui_engine_get_hal();
+
     for (int i = 0; i < w; i++)
     {
         hal->set_pixel(x + i, y, color);
@@ -55,11 +59,13 @@ void dianui_draw_border(int x, int y, int w, int h, DianUI_Color color)
 
 void dianui_draw_pixel(int x, int y, DianUI_Color color)
 {
+    DianUI_HAL *hal = dianui_engine_get_hal();
     hal->set_pixel(x, y, color);
 }
 
 void dianui_draw_icon(const uint8_t *iconData, int x, int y, int iconSize, DianUI_Color color)
 {
+    DianUI_HAL *hal = dianui_engine_get_hal();
     for (int j = 0; j < iconSize; j++)
     {
         uint8_t line = iconData[j];

@@ -1,8 +1,8 @@
-#include "dianui_element.h"
 #include "dianui_text.h"
 #include "../core/dianui_engine_private.h"
 #include "../core/dianui_renderer.h"
 #include "../core/dianui_config.h"
+#include "../core/dianui_log.h"
 #include <string.h>
 
 static DianUI_TextElement text_pool[DIANUI_MAX_TEXT];
@@ -44,8 +44,20 @@ void dianui_add_icon_to_text(DianUI_TextElement *textEl, const uint8_t *iconData
     textEl->base.dirty = true;
 }
 
+void dianui_update_text(DianUI_TextElement *textEl, const char *newText)
+{
+    textEl->text = newText;
+    textEl->base.dirty = true;
+}
+
 static void draw_text_element(DianUI_BaseElement *self)
 {
+    if (!self)
+    {
+        DIANUI_LOGE("DianUI element is NULL.");
+        return;
+    }
+
     DianUI_TextElement *el = (DianUI_TextElement *)self;
 
     if (self->border)
@@ -89,4 +101,9 @@ static void draw_text_element(DianUI_BaseElement *self)
     }
 
     dianui_draw_string(el->text, x, y, el->color);
+}
+
+void dianui_text_reset()
+{
+    text_pool_index = 0;
 }

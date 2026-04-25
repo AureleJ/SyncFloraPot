@@ -67,4 +67,10 @@ typedef struct DianUI_QRCodeElement
     const char *data; /* String to encode */
 } DianUI_QRCodeElement;
 
+typedef struct DianUI_Page
+{
+    const char *name;
+    void (*on_load)(void);
+} DianUI_Page;
+
 #endif // DIANUI_TYPES_H

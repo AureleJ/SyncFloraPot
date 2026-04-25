@@ -23,4 +23,7 @@
 // Animations
 #include "animation/dianui_animation.h"
 
+// Pages
+#include "pages/dianui_pages.h"
+
 #endif // UI_H

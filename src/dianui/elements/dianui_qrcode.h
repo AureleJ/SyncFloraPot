@@ -17,4 +17,9 @@
  */
 DianUI_QRCodeElement *dianui_create_qr_code(int x, int y, int w, int h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, const char *data);
 
+/**
+ * @brief Reset the QR code element pool.
+ */
+void dianui_qrcode_reset();
+
 #endif // DIANUI_QR_CODE_H

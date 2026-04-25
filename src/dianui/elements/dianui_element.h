@@ -2,6 +2,10 @@
 #define DIANUI_ELEMENT_H
 
 #include "../core/dianui_types.h"
+#include "dianui_icon.h"
+#include "dianui_text.h"
+#include "dianui_shape.h"
+#include "dianui_qrcode.h"
 
 /**
  * @brief Set the visibility of an element.
@@ -17,5 +21,10 @@ void dianui_set_visible(DianUI_BaseElement *self, bool visible);
  * @param self Pointer to the element.
  */
 void dianui_mark_dirty(DianUI_BaseElement *self);
+
+/**
+ * @brief Reset all element pools.
+ */
+void dianui_elements_reset();
 
 #endif // DIANUI_ELEMENT_H

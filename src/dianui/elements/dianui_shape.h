@@ -17,4 +17,9 @@
  */
 DianUI_ShapeElement *dianui_create_shape(int x, int y, int w, int h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, DianUI_Color color);
 
+/**
+ * @brief Reset the shape element pool.
+ */
+void dianui_shape_reset();
+
 #endif // DIANUI_SHAPE_H

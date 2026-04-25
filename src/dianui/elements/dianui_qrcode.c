@@ -1,7 +1,7 @@
-#include "dianui_element.h"
 #include "dianui_qrcode.h"
 #include "../core/dianui_engine_private.h"
 #include "../core/dianui_renderer.h"
+#include "../core/dianui_log.h"
 #include "../core/dianui_config.h"
 #include <string.h>
 #include "qrcode_generator.h"
@@ -83,4 +83,9 @@ static void draw_qr_code_element(DianUI_BaseElement *self)
             }
         }
     }
+}
+
+void dianui_qrcode_reset()
+{
+    qr_pool_index = 0;
 }

@@ -1,7 +1,9 @@
+#include "dianui_log.h"
 #include "dianui_engine.h"
 #include "dianui_engine_private.h"
 #include "dianui_renderer.h"
 #include "dianui_config.h"
+#include "../elements/dianui_element.h"
 #include <string.h>
 #include <stdint.h>
 
@@ -13,7 +15,17 @@ static int element_count = 0;
 void dianui_init(DianUI_HAL *hal_ptr)
 {
     hal = hal_ptr;
-    dianui_renderer_init(hal);
+}
+
+DianUI_HAL *dianui_engine_get_hal()
+{
+    if (!hal)
+    {
+        DIANUI_LOGE("DianUI HAL not initialized. Call dianui_init() first.");
+        return NULL;
+    }
+
+    return hal;
 }
 
 void dianui_engine_register(DianUI_BaseElement *el)
@@ -22,6 +34,28 @@ void dianui_engine_register(DianUI_BaseElement *el)
         return;
 
     registry[element_count++] = el;
+}
+
+int dianui_get_screen_width()
+{
+    if (!hal)
+    {
+        DIANUI_LOGE("DianUI HAL not initialized. Call dianui_init() first.");
+        return 0;
+    }
+
+    return hal->width;
+}
+
+int dianui_get_screen_height()
+{
+    if (!hal)
+    {
+        DIANUI_LOGE("DianUI HAL not initialized. Call dianui_init() first.");
+        return 0;
+    }
+
+    return hal->height;
 }
 
 void dianui_render(void)
@@ -62,4 +96,10 @@ void dianui_clear(void)
     /* Mark all elements dirty so next render redraws everything */
     for (int i = 0; i < element_count; i++)
         registry[i]->dirty = true;
+}
+
+void dianui_reset(void)
+{
+    element_count = 0;
+    dianui_elements_reset();
 }

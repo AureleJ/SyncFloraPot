@@ -18,4 +18,9 @@
  */
 DianUI_IconElement *dianui_create_icon(int x, int y, int w, int h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, const uint8_t *iconData, int iconSize);
 
+/**
+ * @brief Reset the icon element pool.
+ */
+void dianui_icon_reset();
+
 #endif // DIANUI_ICON_H
