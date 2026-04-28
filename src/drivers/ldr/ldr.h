@@ -1,7 +1,7 @@
 #ifndef LDR_H
 #define LDR_H
 
-#include "driver/adc.h"
+#include "hal/adc_types.h"
 #include "esp_err.h"
 
 /**

@@ -6,6 +6,8 @@
 static const char *TAG = "LDR_DRIVER";
 static adc_channel_t ldr_adc_channel = -1;
 static bool s_initialized = false;
+static const int ADC_MAX_VALUE = 4095;
+static const int NUM_READINGS = 20;
 
 esp_err_t ldr_init(adc_channel_t adc_channel)
 {
@@ -37,11 +39,12 @@ int ldr_read_percent(void)
         ESP_LOGE(TAG, "LDR sensor not initialized");
         return -1;
     }
-    
+
     adc_oneshot_unit_handle_t adc_handle = adc_manager_get_handle();
 
     int total = 0;
-    for (int i = 0; i < 10; i++)
+    int last_raw = 0;
+    for (int i = 0; i < NUM_READINGS; i++)
     {
         int raw = 0;
         esp_err_t ret = adc_oneshot_read(adc_handle, ldr_adc_channel, &raw);
@@ -50,9 +53,17 @@ int ldr_read_percent(void)
             ESP_LOGE(TAG, "ADC read failed: %s", esp_err_to_name(ret));
             return -1;
         }
+
+        if (raw < 0 || raw > ADC_MAX_VALUE)
+            continue;
+
+        if (last_raw != 0 && (raw < last_raw / 2 || raw > last_raw * 2))
+            continue;
+
         total += raw;
+        last_raw = raw;
     }
 
-    int average = total / 10;
-    return (average * 100) / 4095;
+    int average = total / NUM_READINGS;
+    return (average * 100) / ADC_MAX_VALUE;
 }
