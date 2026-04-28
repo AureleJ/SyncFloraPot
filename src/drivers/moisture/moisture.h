@@ -10,7 +10,7 @@
  * This function sets up the ADC unit and channel for reading the moisture sensor.
  * It should be called before any calls to `moisture_read_percent()`.
  */
-esp_err_t moisture_init(adc_channel_t adc_channel);
+esp_err_t moisture_init(adc_channel_t adc_channel, gpio_num_t power_pin);
 
 /**
  * @brief Read moisture level as a percentage from the moisture sensor
