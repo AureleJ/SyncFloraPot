@@ -1,4 +1,5 @@
 #include "pump.h"
+#include "esp_log.h"
 
 static const char *TAG = "PUMP_DRIVER";
 static gpio_num_t pump_pin = -1;
@@ -10,18 +11,18 @@ esp_err_t pump_init(gpio_num_t pump_pin_arg)
 {
     pump_pin = pump_pin_arg;
 
-    esp_err_t err = gpio_set_direction(pump_pin, GPIO_MODE_OUTPUT);
-    if (err != ESP_OK)
+    esp_err_t ret = gpio_set_direction(pump_pin, GPIO_MODE_OUTPUT);
+    if (ret != ESP_OK)
     {
-        ESP_LOGE(TAG, "Failed to set pump pin direction: %s", esp_err_to_name(err));
-        return err;
+        ESP_LOGE(TAG, "Failed to set pump pin direction: %s", esp_err_to_name(ret));
+        return ret;
     }
 
-    err = gpio_set_level(pump_pin, 0);
-    if (err != ESP_OK)
+    ret = gpio_set_level(pump_pin, 0);
+    if (ret != ESP_OK)
     {
-        ESP_LOGE(TAG, "Failed to set pump pin level: %s", esp_err_to_name(err));
-        return err;
+        ESP_LOGE(TAG, "Failed to set pump pin level: %s", esp_err_to_name(ret));
+        return ret;
     }
 
     s_initialized = true;
@@ -37,11 +38,11 @@ esp_err_t pump_on()
         return ESP_ERR_INVALID_STATE;
     }
 
-    esp_err_t err = gpio_set_level(pump_pin, 1);
-    if (err != ESP_OK)
+    esp_err_t ret = gpio_set_level(pump_pin, 1);
+    if (ret != ESP_OK)
     {
-        ESP_LOGE(TAG, "Failed to turn pump on: %s", esp_err_to_name(err));
-        return err;
+        ESP_LOGE(TAG, "Failed to turn pump on: %s", esp_err_to_name(ret));
+        return ret;
     }
 
     return ESP_OK;
@@ -55,11 +56,11 @@ esp_err_t pump_off()
         return ESP_ERR_INVALID_STATE;
     }
 
-    esp_err_t err = gpio_set_level(pump_pin, 0);
-    if (err != ESP_OK)
+    esp_err_t ret = gpio_set_level(pump_pin, 0);
+    if (ret != ESP_OK)
     {
-        ESP_LOGE(TAG, "Failed to turn pump off: %s", esp_err_to_name(err));
-        return err;
+        ESP_LOGE(TAG, "Failed to turn pump off: %s", esp_err_to_name(ret));
+        return ret;
     }
 
     return ESP_OK;
