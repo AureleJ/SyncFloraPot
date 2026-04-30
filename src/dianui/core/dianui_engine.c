@@ -58,6 +58,17 @@ int dianui_get_screen_height()
     return hal->height;
 }
 
+void dianui_set_contrast(uint8_t contrast)
+{
+    if (!hal || !hal->set_contrast)
+    {
+        DIANUI_LOGE("DianUI HAL does not support setting contrast.");
+        return;
+    }
+
+    hal->set_contrast(contrast);
+}
+
 void dianui_render(void)
 {
     bool needs_redraw = false;

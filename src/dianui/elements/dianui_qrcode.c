@@ -83,6 +83,8 @@ static void draw_qr_code_element(DianUI_BaseElement *self)
             }
         }
     }
+
+    dianui_set_contrast(30);
 }
 
 void dianui_qrcode_reset()

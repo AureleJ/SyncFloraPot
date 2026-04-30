@@ -86,3 +86,8 @@ void display_update(void)
 
     i2c_master_transmit(oled_handle, buffer, sizeof(buffer), 1000);
 }
+
+void display_set_contrast(uint8_t contrast) {
+    display_send_cmd(0x81); 
+    display_send_cmd(contrast); 
+}

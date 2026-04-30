@@ -32,4 +32,11 @@ int dianui_get_screen_height();
  */
 DianUI_HAL *dianui_engine_get_hal();
 
+/**
+ * @brief Set the display contrast.
+ *
+ * @param contrast Contrast level (0-255).
+ */
+void dianui_set_contrast(uint8_t contrast);
+
 #endif // DIANUI_ENGINE_PRIVATE_H

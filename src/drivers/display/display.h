@@ -15,4 +15,6 @@ void display_clear(void);
 
 void display_update(void);
 
+void display_set_contrast(uint8_t contrast);
+
 #endif // DISPLAY_H
