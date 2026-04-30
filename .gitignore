@@ -1,7 +1,0 @@
-.pio
-.vscode/
-include/
-build/
-test/
-sdkconfig*
-PROCESS.md

@@ -1,0 +1,11 @@
+.pio
+.vscode/
+include/
+build/
+test/
+sdkconfig*
+PROCESS.md
+src/dianui/core/dianui_layout.c
+src/dianui/core/dianui_layout.h
+src/drivers/dht11/dht11.c
+src/drivers/dht11/dht11.h
