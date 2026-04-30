@@ -1,69 +1,36 @@
-#include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/queue.h"
 #include "esp_log.h"
 #include "drivers/adc_manager/adc_manager.h"
-#include "drivers/ldr/ldr.h"
-#include "drivers/moisture/moisture.h"
-#include "drivers/ultrasonic/ultrasonic.h"
-#include "config.h"
+#include "core/sensor_state.h"
+#include "core/message.h"
+#include "services/srv_monitoring.h"
+#include "services/srv_internet.h"
+#include "services/srv_display.h"
+#include "core/handles.h"
+#include "drivers/i2c_manager/i2c_manager.h"
 
 static const char *TAG = "MAIN";
 
-void task_sensors(void *pvParameters);
+QueueHandle_t hydration_queue = NULL;
 
-void task_sensors(void *pvParameters)
-{
-    esp_err_t ret = ldr_init(LDR_ADC_CHANNEL);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "LDR init failed: %s", esp_err_to_name(ret));
-        vTaskDelete(NULL);
-        return;
-    }
-
-    ret = moisture_init(MOISTURE_ADC_CHANNEL);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Moisture init failed: %s", esp_err_to_name(ret));
-        vTaskDelete(NULL);
-        return;
-    }
-
-    esp_err_t ret = ultrasonic_init(ULTRASONIC_TRIG_PIN, ULTRASONIC_ECHO_PIN);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Ultrasonic init failed: %s", esp_err_to_name(ret));
-        vTaskDelete(NULL);
-        return;
-    }
-
-    while (1)
-    {
-        int light = ldr_read_percent();
-        int moisture = moisture_read_percent();
-        float distance = 0.0f;
-        ret = ultrasonic_read_distance(&distance);
-        if (ret != ESP_OK)
-        {
-            ESP_LOGE(TAG, "Failed to read ultrasonic distance: %s", esp_err_to_name(ret));
-            vTaskDelay(pdMS_TO_TICKS(1000));
-            continue;
-        }
-
-        ESP_LOGI(TAG, "Light: %d%% | Moisture: %d%% | Distance: %.2f cm", light, moisture, distance);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-}
+TaskHandle_t srv_internet_task_handle = NULL;
+TaskHandle_t srv_display_task_handle = NULL;
 
 void app_main(void)
 {
-    esp_err_t ret = adc_manager_init();
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "ADC manager init failed: %s", esp_err_to_name(ret));
-        return;
-    }
+    ESP_LOGI(TAG, "Starting Smart Irrigation System");
 
-    xTaskCreate(task_sensors, "task_sensors", 4096, NULL, 5, NULL);
+    i2c_manager_init();
+
+    xTaskCreate(srv_display_task, "DisplayTask", 4096, NULL, 5, &srv_display_task_handle);
+
+    ESP_ERROR_CHECK(adc_manager_init());
+    sensor_state_init();
+
+    hydration_queue = xQueueCreate(10, sizeof(hydration_msg_t));
+
+    xTaskCreate(srv_monitoring_task, "MonitoringTask", 4096, NULL, 5, NULL);
+    xTaskCreate(srv_internet_task, "InternetTask", 4096, NULL, 5, &srv_internet_task_handle);   
 }
