@@ -13,6 +13,13 @@ export const appStyles = StyleSheet.create({
     paddingBottom: spacing.xl,
   },
 
+  topBar: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom: spacing.lg,
+  },
+
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -24,19 +31,120 @@ export const appStyles = StyleSheet.create({
     fontSize: fontSizes.xxxl,
     fontWeight: fontWeights.bold,
     color: colors.textPrimary,
+    marginBottom: spacing.xs,
   },
 
   subHeading: {
-    fontSize: fontSizes.xl,
+    fontSize: fontSizes.lg,
     fontWeight: fontWeights.semibold,
     color: colors.textSecondary,
-    marginBottom: spacing.lg,
+    marginBottom: 0,
+  },
+
+  scanButton: {
+    minHeight: 36,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.glassBorderFocus,
+  },
+
+  scanButtonPressed: {
+    opacity: 0.88,
+  },
+
+  scanButtonLabel: {
+    color: colors.textPrimary,
+    fontSize: fontSizes.sm,
+    fontWeight: fontWeights.semibold,
+  },
+
+  potsSectionHeader: {
+    marginBottom: spacing.md,
+  },
+
+  sectionTitle: {
+    fontSize: fontSizes.xl,
+    color: colors.textPrimary,
+    fontWeight: fontWeights.bold,
+  },
+
+  sectionSubtitle: {
+    fontSize: fontSizes.sm,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+  },
+
+  potsList: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: spacing.md,
   },
 
   statusBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    backgroundColor: colors.successBg,
+    borderRadius: borderRadius.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
+  },
+
+  potCard: {
+    width: "48%",
+    minHeight: 130,
+    backgroundColor: colors.glassBgStrong,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.glassBorderFocus,
+    padding: spacing.md,
+    justifyContent: "space-between",
+  },
+
+  potCardTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: spacing.lg,
+  },
+
+  potIconLarge: {
+    width: 44,
+    height: 44,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  wifiStatus: {
+    width: 32,
+    height: 32,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  potCardBottomRow: {
+    gap: 2,
+  },
+
+  potCardName: {
+    fontSize: fontSizes.lg,
+    fontWeight: fontWeights.bold,
+    color: colors.textPrimary,
+    lineHeight: 22,
+  },
+
+  potCardLocation: {
+    fontSize: fontSizes.xs,
+    color: colors.textTertiary,
+    lineHeight: 14,
   },
 
   statusText: {
@@ -56,7 +164,7 @@ export const appStyles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 15,
+    gap: spacing.md,
   },
 
   emptyState: {
