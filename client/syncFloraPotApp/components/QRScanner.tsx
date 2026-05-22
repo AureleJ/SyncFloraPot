@@ -4,8 +4,10 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function QRScanner({
   onScan,
+  showAlert = true,
 }: {
   onScan: (data: string) => void;
+  showAlert?: boolean;
 }) {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
@@ -18,9 +20,9 @@ export default function QRScanner({
     return (
       <View style={styles.container}>
         <Text style={styles.message}>
-          Nous avons besoin de votre permission pour utiliser la caméra
+          We need your permission to use the camera
         </Text>
-        <Button onPress={requestPermission} title="Accorder la permission" />
+        <Button onPress={requestPermission} title="Grant permission" />
       </View>
     );
   }
@@ -28,7 +30,9 @@ export default function QRScanner({
   const handleBarcodeScanned = ({ data }: { data: string }) => {
     setScanned(true);
     onScan(data);
-    alert(`QR Code scanné : ${data}`);
+    if (showAlert) {
+      alert(`QR Code scanned: ${data}`);
+    }
   };
 
   return (
@@ -55,7 +59,7 @@ export default function QRScanner({
           style={styles.button}
           onPress={() => setScanned(false)}
         >
-          <Text style={styles.buttonText}>Scanner à nouveau</Text>
+          <Text style={styles.buttonText}>Scan again</Text>
         </TouchableOpacity>
       )}
     </View>
