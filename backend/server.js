@@ -11,7 +11,7 @@ const io = new Server(server, {
   },
 });
 
-const mqttClient = mqtt.connect("mqtt://192.168.1.26:1883");
+const mqttClient = mqtt.connect("mqtt://192.168.1.55:1883");
 const topic = "florapot/sensors";
 
 mqttClient.on("connect", () => {
@@ -22,10 +22,9 @@ mqttClient.on("connect", () => {
 mqttClient.on("message", (topic, message) => {
   console.log(`Message reçu - Topic: ${topic}, Message: ${message}`);
 
-  io.emit("syncFloraPotData", {
-    topic,
-    message: message.toString(),
-  });
+  const payload = JSON.parse(message.toString());
+
+  io.emit("syncFloraPotData", payload);
 });
 
 mqttClient.on("error", (error) => {
