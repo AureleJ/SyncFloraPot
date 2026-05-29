@@ -11,7 +11,8 @@ const io = new Server(server, {
   },
 });
 
-const mqttClient = mqtt.connect("mqtt://192.168.1.55:1883");
+const mqttUrl = process.env.MQTT_URL || "mqtt://mqtt:1883";
+const mqttClient = mqtt.connect(mqttUrl);
 const topic = "florapot/sensors";
 
 mqttClient.on("connect", () => {
@@ -40,4 +41,5 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3000, () => console.log("Listening on port 3000"));
+const port = process.env.PORT || 3000;
+server.listen(port, () => console.log(`Listening on port ${port}`));
