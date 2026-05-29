@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  backend:
+    build: .
+    
+    container_name: syncflorapot_back
+    
+    restart: unless-stopped
+    
+    ports:
+      - "3000:3000"
+    
+    environment:
+      PORT: 3000
+      MQTT_URL: mqtt://mqtt:1883
+
+    depends_on:
+      - db
+      - mqtt
+    
+    networks:
+      - syncflorapot_network
+
+  db:
+    
+    image: timescale/timescaledb:latest-pg16
+    
+    container_name: syncflorapot_db
+    
+    restart: unless-stopped
+    
+    environment:
+      POSTGRES_USER: syncflorapot
+      POSTGRES_PASSWORD: syncflorapot_pass
+      POSTGRES_DB: syncflorapot
+    
+    ports:
+      - "5432:5432"
+    
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+    
+    networks:
+      - syncflorapot_network
+
+  mqtt:
+    
+    image: eclipse-mosquitto:2
+    
+    container_name: syncflorapot_mqtt
+    
+    restart: unless-stopped
+    
+    ports:
+      - "1883:1883"
+    
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    
+    networks:
+      - syncflorapot_network
+
+volumes:
+  timescale_data:
+  mosquitto_data:
+  mosquitto_log:
+
+networks:
+  syncflorapot_network:
+    driver: bridge
