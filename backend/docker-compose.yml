@@ -1,10 +1,10 @@
 version: "3.8"
 
 services:
-  backend:
+  api:
     build: .
     
-    container_name: syncflorapot_back
+    container_name: syncflorapot_api
     
     restart: unless-stopped
     
@@ -24,7 +24,7 @@ services:
 
   db:
     
-    image: timescale/timescaledb:latest-pg16
+    image: timescale/timescaledb:latest-pg17
     
     container_name: syncflorapot_db
     
