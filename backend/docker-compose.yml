@@ -11,41 +11,55 @@ services:
     ports:
       - "3000:3000"
     
+    env_file: .env
+    
     environment:
       PORT: 3000
+      POSTGRES_USER: syncflorapot
+      POSTGRES_DB: syncflorapot
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
       MQTT_URL: mqtt://mqtt:1883
 
     depends_on:
-      - db
-      - mqtt
+      db:
+       condition: service_healthy
+      mqtt:
+       condition: service_started
     
     networks:
       - syncflorapot_network
 
   db:
-    
     image: timescale/timescaledb:latest-pg17
     
     container_name: syncflorapot_db
     
     restart: unless-stopped
     
+    env_file: .env
+    
     environment:
       POSTGRES_USER: syncflorapot
-      POSTGRES_PASSWORD: syncflorapot_pass
       POSTGRES_DB: syncflorapot
     
     ports:
       - "5432:5432"
     
     volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - timescale_data:/var/lib/postgresql/data
     
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U syncflorapot -d syncflorapot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
     networks:
       - syncflorapot_network
 
   mqtt:
-    
     image: eclipse-mosquitto:2
     
     container_name: syncflorapot_mqtt
