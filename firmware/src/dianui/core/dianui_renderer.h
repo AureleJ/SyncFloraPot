@@ -15,6 +15,8 @@ void dianui_draw_string(const char *str, int x, int y, DianUI_Color color);
 void dianui_draw_shape(int x, int y, int w, int h, DianUI_Color color);
 void dianui_draw_border(int x, int y, int w, int h, DianUI_Color color);
 void dianui_draw_pixel(int x, int y, DianUI_Color color);
+void dianui_draw_hline(int x1, int x2, int y, DianUI_Color color);
 void dianui_draw_icon(const uint8_t *iconData, int x, int y, int iconSize, DianUI_Color color);
+void dianui_draw_line(int x1, int y1, int x2, int y2, DianUI_Color color);
 
 #endif // DIANUI_RENDERER_H

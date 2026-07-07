@@ -11,6 +11,8 @@ void display_init(void);
 
 void display_set_pixel(int x, int y, bool color);
 
+void display_set_hline(int x1, int x2, int y, bool color);
+
 void display_clear(void);
 
 void display_update(void);

@@ -73,6 +73,13 @@ void display_set_pixel(int x, int y, bool color)
         vram[index] &= ~(1 << (y % DISPLAY_PAGE_HEIGHT));
 }
 
+// Temporary hline methode (not optimized yet)
+void display_set_hline(int x1, int x2, int y, bool color)
+{
+    for (int x = x1; x <= x2; x++)
+        display_set_pixel(x, y, color);
+}
+
 void display_clear(void)
 {
     memset(vram, 0x00, sizeof(vram));
