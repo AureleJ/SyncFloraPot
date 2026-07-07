@@ -42,6 +42,9 @@
 #ifndef DIANUI_MAX_SCENES
 #define DIANUI_MAX_SCENES 2
 #endif
+
+#ifndef DIANUI_MAX_POLYGONS
+#define DIANUI_MAX_POLYGONS 5
 #endif
 
 /* Enable or disable logging (set to 0 to disable) */

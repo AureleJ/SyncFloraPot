@@ -6,6 +6,7 @@
 #include "dianui_text.h"
 #include "dianui_shape.h"
 #include "dianui_qrcode.h"
+#include "dianui_polygon.h"
 
 /**
  * @brief Set the visibility of an element.

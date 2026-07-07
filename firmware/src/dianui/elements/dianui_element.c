@@ -29,4 +29,5 @@ void dianui_elements_reset()
     dianui_text_reset();
     dianui_shape_reset();
     dianui_qrcode_reset();
+    dianui_polygons_reset();
 }

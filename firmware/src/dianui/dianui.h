@@ -19,6 +19,7 @@
 #include "elements/dianui_text.h"
 #include "elements/dianui_shape.h"
 #include "elements/dianui_qrcode.h"
+#include "elements/dianui_polygon.h"
 
 // Animations
 #include "animation/dianui_animation.h"

@@ -21,6 +21,26 @@ typedef enum DianUI_Color
     DIANUI_WHITE
 } DianUI_Color;
 
+typedef enum DianUI_ShapeType
+{
+    DIANUI_SHAPE_RECTANGLE,
+    DIANUI_SHAPE_ROUNDED_RECTANGLE,
+    DIANUI_SHAPE_CIRCLE,
+    DIANUI_SHAPE_LINE
+} DianUI_ShapeType;
+
+/* Point */
+typedef struct DianUI_Point
+{
+    int x, y;
+} DianUI_Point;
+
+/* Size */
+typedef struct DianUI_Size
+{
+    int w, h;
+} DianUI_Size;
+
 /* Base element */
 typedef struct DianUI_BaseElement
 {
@@ -84,10 +104,21 @@ typedef struct DianUI_TriangleElement
     DianUI_BaseElement base;
     DianUI_Color color; /* Fill color */
 } DianUI_TriangleElement;
+
+/* Polygon 4 points element */
+typedef struct
+{
+    DianUI_Point pos;
+    int roundness;
+} DianUI_Corner;
+
+typedef struct
 {
     DianUI_BaseElement base;
-    DianUI_Color color; /* Shape color */
-} DianUI_ShapeElement;
+    DianUI_Color color;
+    DianUI_Point pos;
+    DianUI_Corner corners[4];
+} DianUI_PolygonElement;
 
 /* QR code element - data is encoded and rendered at draw time */
 typedef struct DianUI_QRCodeElement
