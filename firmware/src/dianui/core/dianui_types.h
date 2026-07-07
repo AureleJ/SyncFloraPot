@@ -54,7 +54,36 @@ typedef struct DianUI_TextElement
 } DianUI_TextElement;
 
 /* Filled rectangle element */
-typedef struct DianUI_ShapeElement
+typedef struct DianUI_RectangleElement
+{
+    DianUI_BaseElement base;
+    DianUI_Color color; /* Fill color */
+    uint8_t radius;     /* Corner radius for rounded rectangles (0 = sharp) */
+} DianUI_RectangleElement;
+
+/* Circle element */
+typedef struct DianUI_CircleElement
+{
+    DianUI_BaseElement base;
+    DianUI_Color color; /* Fill color */
+    uint8_t radius;     /* Radius of the circle */
+} DianUI_CircleElement;
+
+/* Line element */
+typedef struct DianUI_LineElement
+{
+    DianUI_BaseElement base;
+    DianUI_Color color; /* Line color */
+    uint8_t thickness;  /* Line thickness in pixels */
+    uint16_t x2, y2;    /* End point coordinates */
+} DianUI_LineElement;
+
+/* Triangle element */
+typedef struct DianUI_TriangleElement
+{
+    DianUI_BaseElement base;
+    DianUI_Color color; /* Fill color */
+} DianUI_TriangleElement;
 {
     DianUI_BaseElement base;
     DianUI_Color color; /* Shape color */
@@ -67,6 +96,7 @@ typedef struct DianUI_QRCodeElement
     const char *data; /* String to encode */
 } DianUI_QRCodeElement;
 
+/* Page element */
 typedef struct DianUI_Page
 {
     const char *name;

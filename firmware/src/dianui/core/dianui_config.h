@@ -15,12 +15,24 @@
 #define DIANUI_MAX_ICONS 5
 #endif
 
-#ifndef DIANUI_MAX_SHAPES
-#define DIANUI_MAX_SHAPES 10
+#ifndef DIANUI_MAX_RECTANGLES
+#define DIANUI_MAX_RECTANGLES 5
+#endif
+
+#ifndef DIANUI_MAX_CIRCLES
+#define DIANUI_MAX_CIRCLES 5
+#endif
+
+#ifndef DIANUI_MAX_LINES
+#define DIANUI_MAX_LINES 5
+#endif
+
+#ifndef DIANUI_MAX_TRIANGLES
+#define DIANUI_MAX_TRIANGLES 5
 #endif
 
 #ifndef DIANUI_MAX_QR
-#define DIANUI_MAX_QR 5
+#define DIANUI_MAX_QR 1
 #endif
 
 #ifndef DIANUI_MAX_ANIMATIONS
@@ -28,7 +40,8 @@
 #endif
 
 #ifndef DIANUI_MAX_SCENES
-#define DIANUI_MAX_SCENES 5
+#define DIANUI_MAX_SCENES 2
+#endif
 #endif
 
 /* Enable or disable logging (set to 0 to disable) */
