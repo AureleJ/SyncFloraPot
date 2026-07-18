@@ -17,11 +17,24 @@ DianUI_PolygonElement *dianui_create_polygon(DianUI_Point pos, DianUI_Corner cor
         return NULL;
     }
 
+    int minX = corners[0].pos.x;
+    int maxX = corners[0].pos.x;
+    int minY = corners[0].pos.y;
+    int maxY = corners[0].pos.y;
+
+    for (int i = 1; i < 4; i++)
+    {
+        if (corners[i].pos.x < minX) minX = corners[i].pos.x;
+        if (corners[i].pos.x > maxX) maxX = corners[i].pos.x;
+        if (corners[i].pos.y < minY) minY = corners[i].pos.y;
+        if (corners[i].pos.y > maxY) maxY = corners[i].pos.y;
+    }
+
     DianUI_PolygonElement *el = &polygon_pool[polygon_pool_index++];
     el->base.x = pos.x;
     el->base.y = pos.y;
-    el->base.w = 0;
-    el->base.h = 0;
+    el->base.h = maxY - minY;
+    el->base.w = maxX - minX;
     el->base.xAnchor = xAnchor;
     el->base.yAnchor = yAnchor;
     el->base.border = false;
@@ -37,6 +50,7 @@ DianUI_PolygonElement *dianui_create_polygon(DianUI_Point pos, DianUI_Corner cor
     return el;
 }
 
+// Need to be optimized
 static void draw_polygon_element(DianUI_BaseElement *self)
 {
     if (!self)
@@ -44,14 +58,33 @@ static void draw_polygon_element(DianUI_BaseElement *self)
 
     DianUI_PolygonElement *el = (DianUI_PolygonElement *)self;
 
+    int minX = el->corners[0].pos.x;
+    int maxX = el->corners[0].pos.x;
+    int minY = el->corners[0].pos.y;
+    int maxY = el->corners[0].pos.y;
+
+    for (int i = 1; i < 4; i++)
+    {
+        if (el->corners[i].pos.x < minX) minX = el->corners[i].pos.x;
+        if (el->corners[i].pos.x > maxX) maxX = el->corners[i].pos.x;
+        if (el->corners[i].pos.y < minY) minY = el->corners[i].pos.y;
+        if (el->corners[i].pos.y > maxY) maxY = el->corners[i].pos.y;
+    }
+
+    el->base.w = maxX - minX;
+    el->base.h = maxY - minY;
+
+    int posX = el->base.x - (el->base.w / 2);
+    int posY = el->base.y - (el->base.h / 2);
+
     DianUI_Point START[4];
     DianUI_Point END[4];
 
     for (int i = 0; i < 4; i++)
     {
-        DianUI_Point currentCorner = {.x = el->base.x + el->corners[i].pos.x, .y = el->base.y + el->corners[i].pos.y};
-        DianUI_Point nextCorner = {.x = el->base.x + el->corners[(i + 1) % 4].pos.x, .y = el->base.y + el->corners[(i + 1) % 4].pos.y};
-        DianUI_Point previousCorner = {.x = el->base.x + el->corners[(i + 3) % 4].pos.x, .y = el->base.y + el->corners[(i + 3) % 4].pos.y};
+        DianUI_Point currentCorner = {.x = posX + el->corners[i].pos.x, .y = posY + el->corners[i].pos.y};
+        DianUI_Point nextCorner = {.x = posX + el->corners[(i + 1) % 4].pos.x, .y = posY + el->corners[(i + 1) % 4].pos.y};
+        DianUI_Point previousCorner = {.x = posX + el->corners[(i + 3) % 4].pos.x, .y = posY + el->corners[(i + 3) % 4].pos.y};
         int roundness = el->corners[i].roundness;
 
         float vx_prev = previousCorner.x - currentCorner.x;
@@ -83,7 +116,7 @@ static void draw_polygon_element(DianUI_BaseElement *self)
     {
         DianUI_Point start = START[i];
         DianUI_Point end = END[i];
-        DianUI_Point control = {.x = el->base.x + el->corners[i].pos.x, .y = el->base.y + el->corners[i].pos.y};
+        DianUI_Point control = {.x = posX + el->corners[i].pos.x, .y = posY + el->corners[i].pos.y};
 
         int total_steps = 14;
         for (int step = 1; step <= total_steps; step++)
@@ -170,6 +203,16 @@ static void draw_polygon_element(DianUI_BaseElement *self)
             dianui_draw_line(leftWall[y], y, rightWall[y], y, el->color);
         }
     }
+
+    // Draw border if needed w and h border
+    if (0)
+    {
+        dianui_draw_line(posX, posY, posX + el->base.w, posY, el->color); // Top
+        dianui_draw_line(posX, posY + el->base.h, posX + el->base.w, posY + el->base.h, el->color); // Bottom
+        dianui_draw_line(posX, posY, posX, posY + el->base.h, el->color); // Left
+        dianui_draw_line(posX + el->base.w, posY, posX + el->base.w, posY + el->base.h, el->color); // Right
+    }
+
 }
 
 void dianui_polygons_reset()
