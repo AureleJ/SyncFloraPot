@@ -23,8 +23,10 @@ idf_component_register(
         "dianui/elements/dianui_qrcode.c"
         "dianui/elements/dianui_shape.c"
         "dianui/elements/dianui_text.c"
+        "dianui/elements/dianui_polygon.c"
         "dianui/animation/dianui_animation.c"
         "dianui/animation/dianui_easing.c"
+        "dianui/extensions/dianui_face.c"
         "dianui/pages/dianui_pages.c"
         "../lib/qrcode/qrcode_generator.c"
     INCLUDE_DIRS
@@ -44,5 +46,6 @@ idf_component_register(
         "dianui/core"
         "dianui/elements"
         "dianui/animation"
+        "dianui/extensions"
         "../lib/qrcode"
 )
