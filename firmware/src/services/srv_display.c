@@ -137,6 +137,17 @@ void srv_display_task(void *pvParameters)
     {
         uint32_t now = xTaskGetTickCount() * portTICK_PERIOD_MS;
 
+        plant_data_t data = sensor_state_get_copy();
+
+        if (data.light <= 15)
+        {
+            dianui_set_emotion(SLEEPY);
+        }
+        else
+        {
+            dianui_set_emotion(IDLE);
+        }
+
         dianui_update_face(now);
         dianui_update_animations(now);
         dianui_render();
@@ -153,7 +164,6 @@ void srv_display_task(void *pvParameters)
 
         if (notification > 0)
         {
-            plant_data_t data = sensor_state_get_copy();
 
             snprintf(soilBuf, sizeof(soilBuf), "Soil: %d%%", data.soil_moisture);
             dianui_update_text(soilMoistureElement, soilBuf);
