@@ -8,7 +8,10 @@ typedef enum
     IDLE,
     HAPPY,
     BLINK,
-    SLEEPY
+    SLEEPY,
+    THIRSTY,
+    ALMOST_DEAD,
+    WINK
 } Emotion;
 
 void dianui_face_init();
