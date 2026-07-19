@@ -3,7 +3,7 @@
 
 #include "../core/dianui_types.h"
 
-DianUI_PolygonElement *dianui_create_polygon(DianUI_Point pos, DianUI_Corner corners[4], DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, DianUI_Color color);
+DianUI_PolygonElement *dianui_create_polygon(DianUI_Point pos, const DianUI_Corner corners[4], DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, DianUI_Color color);
 
 /**
  * @brief Reset the polygons element pool.
