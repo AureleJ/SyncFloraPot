@@ -7,7 +7,9 @@
 typedef enum DianUI_AnimationType
 {
     DIANUI_TRANSLATE_X,
-    DIANUI_TRANSLATE_Y
+    DIANUI_TRANSLATE_Y,
+    DIANUI_RESIZE_W,
+    DIANUI_RESIZE_H,
 } DianUI_AnimationType;
 
 typedef struct DianUI_Animation
@@ -52,7 +54,7 @@ DianUI_Animation *dianui_animate_element(DianUI_BaseElement *element, DianUI_Ani
  *
  * @param anim Animation instance to start.
  */
-void dianui_start_animation(DianUI_Animation *anim);
+void dianui_start_animation(DianUI_Animation *anim, uint32_t current_time_ms);
 
 /**
  * @brief Check whether an animation has finished.

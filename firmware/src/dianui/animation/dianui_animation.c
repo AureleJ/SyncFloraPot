@@ -21,17 +21,18 @@ DianUI_Animation *dianui_animate_element(DianUI_BaseElement *element, DianUI_Ani
     anim->target = element;
     anim->easing = easing;
     anim->canStart = false;
-    anim->complete = false;
+    anim->complete = true;
     anim->lastUpdate_ms = 0;
 
     return anim;
 }
 
-void dianui_start_animation(DianUI_Animation *anim)
+void dianui_start_animation(DianUI_Animation *anim, uint32_t current_time_ms)
 {
     anim->canStart = true;
-    anim->lastUpdate_ms = 0;
+    anim->lastUpdate_ms = current_time_ms;
     anim->complete = false;
+    anim->currentValue = anim->fromValue;
 }
 
 bool dianui_is_animation_complete(DianUI_Animation *anim)
@@ -48,7 +49,7 @@ void dianui_update_animations(uint32_t current_time_ms)
         if (!anim->canStart || anim->complete)
         {
             if (anim->loop && anim->complete)
-                dianui_start_animation(anim);
+                dianui_start_animation(anim, current_time_ms);
             continue;
         }
 
@@ -78,6 +79,10 @@ void dianui_update_animations(uint32_t current_time_ms)
             anim->target->x = newValue;
         else if (anim->type == DIANUI_TRANSLATE_Y)
             anim->target->y = newValue;
+        else if (anim->type == DIANUI_RESIZE_W)
+            anim->target->w = newValue;
+        else if (anim->type == DIANUI_RESIZE_H)
+            anim->target->h = newValue;
 
         anim->target->dirty = true;
     }
