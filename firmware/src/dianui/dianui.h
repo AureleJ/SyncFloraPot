@@ -21,6 +21,9 @@
 #include "elements/dianui_qrcode.h"
 #include "elements/dianui_polygon.h"
 
+// Widget
+#include "widget/dianui_menu.h"
+
 // Animations
 #include "animation/dianui_animation.h"
 

@@ -47,6 +47,10 @@
 #define DIANUI_MAX_POLYGONS 5
 #endif
 
+#ifndef DIANUI_MAX_MENUS
+#define DIANUI_MAX_MENUS 3
+#endif
+
 /* Enable or disable logging (set to 0 to disable) */
 #ifndef DIANUI_LOG_ENABLED
 #define DIANUI_LOG_ENABLED 1
