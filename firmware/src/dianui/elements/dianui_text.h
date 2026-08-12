@@ -41,4 +41,8 @@ void dianui_update_text(DianUI_TextElement *textEl, const char *newText);
  */
 void dianui_text_reset();
 
+void dianui_highlight_text(DianUI_TextElement *textEl, bool highlight);
+
+void dianui_update_color(DianUI_TextElement *textEl, DianUI_Color newColor);
+
 #endif // DIANUI_TEXT_H

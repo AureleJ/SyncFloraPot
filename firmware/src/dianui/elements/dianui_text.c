@@ -50,6 +50,28 @@ void dianui_update_text(DianUI_TextElement *textEl, const char *newText)
     textEl->base.dirty = true;
 }
 
+void dianui_update_color(DianUI_TextElement *textEl, DianUI_Color newColor)
+{
+    textEl->color = newColor;
+    textEl->base.dirty = true;
+}
+
+void dianui_highlight_text(DianUI_TextElement *textEl, bool highlight)
+{
+    if (highlight)
+    {
+        textEl->color = DIANUI_BLACK;
+        dianui_draw_shape(textEl->base.x, textEl->base.y, textEl->base.w, textEl->base.h, DIANUI_WHITE);
+    }
+    else
+    {
+        textEl->color = DIANUI_WHITE;
+        dianui_draw_shape(textEl->base.x, textEl->base.y, textEl->base.w, textEl->base.h, DIANUI_BLACK);
+    }
+
+    textEl->base.dirty = true;
+}
+
 static void draw_text_element(DianUI_BaseElement *self)
 {
     if (!self)
