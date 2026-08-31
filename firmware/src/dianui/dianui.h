@@ -12,6 +12,7 @@
 #include "core/dianui_types.h"
 #include "core/dianui_hal.h"
 #include "core/dianui_engine.h"
+#include "core/dianui_time.h"
 
 // Elements
 #include "elements/dianui_element.h"
