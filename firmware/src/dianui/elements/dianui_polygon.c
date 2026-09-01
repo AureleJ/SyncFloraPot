@@ -17,6 +17,7 @@ DianUI_PolygonElement *dianui_create_polygon(DianUI_Point pos, const DianUI_Corn
         return NULL;
     }
 
+    // Bounding box computation
     int minX = corners[0].pos.x;
     int maxX = corners[0].pos.x;
     int minY = corners[0].pos.y;
@@ -24,10 +25,14 @@ DianUI_PolygonElement *dianui_create_polygon(DianUI_Point pos, const DianUI_Corn
 
     for (int i = 1; i < 4; i++)
     {
-        if (corners[i].pos.x < minX) minX = corners[i].pos.x;
-        if (corners[i].pos.x > maxX) maxX = corners[i].pos.x;
-        if (corners[i].pos.y < minY) minY = corners[i].pos.y;
-        if (corners[i].pos.y > maxY) maxY = corners[i].pos.y;
+        if (corners[i].pos.x < minX)
+            minX = corners[i].pos.x;
+        if (corners[i].pos.x > maxX)
+            maxX = corners[i].pos.x;
+        if (corners[i].pos.y < minY)
+            minY = corners[i].pos.y;
+        if (corners[i].pos.y > maxY)
+            maxY = corners[i].pos.y;
     }
 
     DianUI_PolygonElement *el = &polygon_pool[polygon_pool_index++];
@@ -50,14 +55,16 @@ DianUI_PolygonElement *dianui_create_polygon(DianUI_Point pos, const DianUI_Corn
     return el;
 }
 
-// Need to be optimized
 static void draw_polygon_element(DianUI_BaseElement *self)
 {
     if (!self)
         return;
 
     DianUI_PolygonElement *el = (DianUI_PolygonElement *)self;
+    int screenW = dianui_get_screen_width();
+    int screenH = dianui_get_screen_height();
 
+    // Anchor on the center of the polygon
     int minX = el->corners[0].pos.x;
     int maxX = el->corners[0].pos.x;
     int minY = el->corners[0].pos.y;
@@ -77,6 +84,7 @@ static void draw_polygon_element(DianUI_BaseElement *self)
     int posX = el->base.x - (el->base.w / 2);
     int posY = el->base.y - (el->base.h / 2);
 
+    // Bezier anchor points for each corner
     DianUI_Point START[4];
     DianUI_Point END[4];
 
@@ -90,34 +98,37 @@ static void draw_polygon_element(DianUI_BaseElement *self)
         float vx_prev = previousCorner.x - currentCorner.x;
         float vy_prev = previousCorner.y - currentCorner.y;
         float len_prev = sqrtf(vx_prev * vx_prev + vy_prev * vy_prev);
+        if (len_prev <= 0.0f)
+            len_prev = 1.0f;
         START[i].x = currentCorner.x + (int)roundf((vx_prev / len_prev) * roundness);
         START[i].y = currentCorner.y + (int)roundf((vy_prev / len_prev) * roundness);
 
         float vx_next = nextCorner.x - currentCorner.x;
         float vy_next = nextCorner.y - currentCorner.y;
         float len_next = sqrtf(vx_next * vx_next + vy_next * vy_next);
+        if (len_next <= 0.0f)
+            len_next = 1.0f;
         END[i].x = currentCorner.x + (int)roundf((vx_next / len_next) * roundness);
         END[i].y = currentCorner.y + (int)roundf((vy_next / len_next) * roundness);
     }
 
-    int leftWall[64];
-    for (int i = 0; i < 64; i++)
+    // Span Buffer
+    int leftWall[screenH];
+    int rightWall[screenH];
+    for (int i = 0; i < screenH; i++)
     {
-        leftWall[i] = 128;
+        leftWall[i] = 1000;
+        rightWall[i] = -1000;
     }
 
-    int rightWall[64];
-    for (int i = 0; i < 64; i++)
-    {
-        rightWall[i] = -128;
-    }
-
+    // Rasterization
     for (int i = 0; i < 4; i++)
     {
         DianUI_Point start = START[i];
         DianUI_Point end = END[i];
         DianUI_Point control = {.x = posX + el->corners[i].pos.x, .y = posY + el->corners[i].pos.y};
 
+        // Bezier curve rasterization
         int total_steps = 14;
         for (int step = 1; step <= total_steps; step++)
         {
@@ -126,34 +137,22 @@ static void draw_polygon_element(DianUI_BaseElement *self)
             curr_p.x = (int)roundf((1.0f - t) * (1.0f - t) * start.x + 2.0f * (1.0f - t) * t * control.x + t * t * end.x);
             curr_p.y = (int)roundf((1.0f - t) * (1.0f - t) * start.y + 2.0f * (1.0f - t) * t * control.y + t * t * end.y);
 
-            if (curr_p.x < leftWall[curr_p.y])
+            if (curr_p.y >= 0 && curr_p.y < screenH)
             {
-                leftWall[curr_p.y] = curr_p.x;
-            }
-            if (curr_p.x > rightWall[curr_p.y])
-            {
-                rightWall[curr_p.y] = curr_p.x;
+                if (curr_p.x < leftWall[curr_p.y])
+                {
+                    leftWall[curr_p.y] = curr_p.x;
+                }
+                if (curr_p.x > rightWall[curr_p.y])
+                {
+                    rightWall[curr_p.y] = curr_p.x;
+                }
             }
         }
 
+        // Line segment between corners
         DianUI_Point next_start = START[(i + 1) % 4];
-        // dianui_draw_line(end.x, end.y, next_start.x, next_start.y, el->color);
 
-        /* if (next_start.y == end.y)
-        {
-            if (next_start.x < end.x)
-            {
-                leftWall[next_start.y] = next_start.x;
-                rightWall[next_start.y] = end.x;
-            }
-            else
-            {
-                leftWall[next_start.y] = end.x;
-                rightWall[next_start.y] = next_start.x;
-            }
-            continue;
-        } */
-        
         int startY;
         int endY;
         int x1, y1, x2, y2;
@@ -178,11 +177,14 @@ static void draw_polygon_element(DianUI_BaseElement *self)
         }
         else
         {
-            continue; 
+            continue;
         }
 
         for (int y = startY; y <= endY; y++)
         {
+            if (y < 0 || y >= screenH)
+                continue;
+
             int x = (int)roundf((float)(y - y1) / (float)(y2 - y1) * (x2 - x1) + x1);
 
             if (x < leftWall[y])
@@ -196,23 +198,28 @@ static void draw_polygon_element(DianUI_BaseElement *self)
         }
     }
 
-    for (int y = 0; y < 64; y++)
+    // Scanline filling
+    for (int y = 0; y < screenH; y++)
     {
-        if (leftWall[y] != 128 && rightWall[y] != -128)
+        if (leftWall[y] <= rightWall[y])
         {
-            dianui_draw_line(leftWall[y], y, rightWall[y], y, el->color);
+            int x1 = leftWall[y] < 0 ? 0 : leftWall[y];
+            int x2 = rightWall[y] >= screenW ? screenW - 1 : rightWall[y];
+
+            if (x1 <= x2)
+            {
+                dianui_draw_hline(x1, x2, y, el->color);
+            }
         }
     }
 
-    // Draw border if needed w and h border
-    if (0)
+    if (el->base.border)
     {
-        dianui_draw_line(posX, posY, posX + el->base.w, posY, el->color); // Top
-        dianui_draw_line(posX, posY + el->base.h, posX + el->base.w, posY + el->base.h, el->color); // Bottom
-        dianui_draw_line(posX, posY, posX, posY + el->base.h, el->color); // Left
-        dianui_draw_line(posX + el->base.w, posY, posX + el->base.w, posY + el->base.h, el->color); // Right
+        dianui_draw_hline(posX, posX + el->base.w, posY, el->color);              // Top
+        dianui_draw_hline(posX, posX + el->base.w, posY + el->base.h, el->color); // Bottom
+        dianui_draw_vline(posX, posY, posY + el->base.h, el->color);              // Left
+        dianui_draw_vline(posX + el->base.w, posY, posY + el->base.h, el->color); // Right
     }
-
 }
 
 void dianui_polygons_reset()
