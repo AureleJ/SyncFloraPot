@@ -16,7 +16,7 @@ typedef enum
 
 void dianui_face_init();
 
-void dianui_update_face(uint32_t now);
+void dianui_update_face();
 
 void dianui_set_emotion(Emotion emotion);
 

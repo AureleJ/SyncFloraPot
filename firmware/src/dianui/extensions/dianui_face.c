@@ -1,17 +1,13 @@
 #include "dianui_face.h"
+#include "../core/dianui_time.h"
 #include "../core/dianui_types.h"
+#include "../animation/dianui_easing.h"
 #include "../dianui.h"
 #include <math.h>
 #include <stdlib.h>
 
-DianUI_PolygonElement *leftEye = 0;
-DianUI_PolygonElement *rightEye = 0;
-
-Emotion currentEmotion = IDLE;
-Emotion targetEmotion = IDLE;
-
 // Blink
-const DianUI_Corner blinkEye[4] = {
+static const DianUI_Corner blinkEye[4] = {
     {.pos = {.x = 0, .y = 0}, .roundness = 4},
     {.pos = {.x = 40, .y = 0}, .roundness = 4},
     {.pos = {.x = 40, .y = 3}, .roundness = 4},
@@ -19,7 +15,7 @@ const DianUI_Corner blinkEye[4] = {
 };
 
 // Idle
-const DianUI_Corner normalEye[4] = {
+static const DianUI_Corner normalEye[4] = {
     {.pos = {.x = 0, .y = 0}, .roundness = 8},
     {.pos = {.x = 30, .y = 0}, .roundness = 8},
     {.pos = {.x = 30, .y = 30}, .roundness = 8},
@@ -27,120 +23,92 @@ const DianUI_Corner normalEye[4] = {
 };
 
 // Happy
-const DianUI_Corner happyEye[4] = {
+static const DianUI_Corner happyEye[4] = {
     {.pos = {.x = 0, .y = 0}, .roundness = 6},
     {.pos = {.x = 20, .y = 0}, .roundness = 6},
     {.pos = {.x = 20, .y = 8}, .roundness = 0},
     {.pos = {.x = 0, .y = 8}, .roundness = 0}};
 
 // Sleepy
-const DianUI_Corner sleepyEye[4] = {
+static const DianUI_Corner sleepyEye[4] = {
     {.pos = {.x = 0, .y = 0}, .roundness = 3},
     {.pos = {.x = 35, .y = 0}, .roundness = 3},
     {.pos = {.x = 35, .y = 5}, .roundness = 3},
     {.pos = {.x = 0, .y = 5}, .roundness = 3}};
 
 // Thirsty
-const DianUI_Corner thirstyEyeLeft[4] = {
+static const DianUI_Corner thirstyEyeLeft[4] = {
     {.pos = {.x = 0, .y = 15}, .roundness = 4},
     {.pos = {.x = 30, .y = 0}, .roundness = 6},
     {.pos = {.x = 30, .y = 30}, .roundness = 6},
     {.pos = {.x = 0, .y = 30}, .roundness = 4}};
 
-const DianUI_Corner thirstyEyeRight[4] = {
+static const DianUI_Corner thirstyEyeRight[4] = {
     {.pos = {.x = 0, .y = 0}, .roundness = 6},
     {.pos = {.x = 30, .y = 15}, .roundness = 4},
     {.pos = {.x = 30, .y = 30}, .roundness = 4},
     {.pos = {.x = 0, .y = 30}, .roundness = 6}};
 
 // Almost dead
-const DianUI_Corner almostDeadEyeLeft[4] = {
+static const DianUI_Corner almostDeadEyeLeft[4] = {
     {.pos = {.x = 0, .y = 15}, .roundness = 4},
     {.pos = {.x = 30, .y = 0}, .roundness = 6},
     {.pos = {.x = 30, .y = 20}, .roundness = 6},
     {.pos = {.x = 0, .y = 20}, .roundness = 4}};
 
-const DianUI_Corner almostDeadEyeRight[4] = {
+static const DianUI_Corner almostDeadEyeRight[4] = {
     {.pos = {.x = 0, .y = 0}, .roundness = 6},
     {.pos = {.x = 30, .y = 15}, .roundness = 4},
     {.pos = {.x = 30, .y = 30}, .roundness = 4},
     {.pos = {.x = 0, .y = 30}, .roundness = 6}};
 
 // Wink
-const DianUI_Corner winkLeftEye[4] = {
+static const DianUI_Corner winkLeftEye[4] = {
     {.pos = {.x = 0, .y = 0}, .roundness = 3},
     {.pos = {.x = 30, .y = 0}, .roundness = 3},
     {.pos = {.x = 30, .y = 10}, .roundness = 3},
     {.pos = {.x = 0, .y = 10}, .roundness = 3},
 };
 
-const DianUI_Corner winkRightEye[4] = {
+static const DianUI_Corner winkRightEye[4] = {
     {.pos = {.x = 0, .y = 0}, .roundness = 8},
     {.pos = {.x = 30, .y = 0}, .roundness = 8},
     {.pos = {.x = 30, .y = 30}, .roundness = 8},
     {.pos = {.x = 0, .y = 30}, .roundness = 8},
 };
 
-DianUI_TextElement *textEl = 0;
+static DianUI_TextElement *textEl = 0;
 
-int targetEyePosX = 0;
-int currentEyePosX = 0;
-int startEyePosX = 0;
-float progressEyePosX = 1.0f;
+static DianUI_PolygonElement *leftEye = 0;
+static DianUI_PolygonElement *rightEye = 0;
 
-int targetEyePosY = 0;
-int currentEyePosY = 0;
-int startEyePosY = 0;
-float progressEyePosY = 1.0f;
+static Emotion currentEmotion = IDLE;
+static Emotion targetEmotion = IDLE;
 
-uint32_t nextLookTime = 0;
+static float lookProgress = 1.0f;
+static float nextLookTimer = 0.0f;
+static int startEyePosX = 0;
+static int targetEyePosX = 0;
+static int startEyePosY = 0;
+static int targetEyePosY = 0;
 
-uint32_t nextBlinkTime = 0;
-bool isBlinking = false;
-uint32_t blinkStartTime = 0;
-#define BLINK_DURATION 160
+static float nextBlinkTimer = 0.0f;
+static float blinkProgress = 0.0f;
 
-uint32_t nextEmotionChangeTime = 0;
+static float snoreProgress = 1.0f;
+static float nextSnoreTimer = 0;
 
-static float progress_linear = 0.0f;
+static float emotionsProgress = 1.0f;
 
-int snoreTarget = -5;
-int snoreCurrent = 0;
-bool snoreDirection = true;
-uint32_t nextSnoreTime = 0;
+static int offset_look_x = 0;
+static int offset_look_y = 0;
+static int offset_snore_y = 0;
 
-int eyeLeftPosX = 45;
-int eyeLeftPosY = 35;
+static const int EYE_LEFT_BASE_X = 45;
+static const int EYE_RIGHT_BASE_X = 85;
+static const int EYE_COMMON_BASE_Y = 35;
 
-int eyeRightPosX = 85;
-int eyeRightPosY = 35;
-
-void dianui_face_init()
-{
-    leftEye = dianui_create_polygon(
-        (DianUI_Point){.x = eyeLeftPosX, .y = eyeLeftPosY},
-        normalEye,
-        DIANUI_CENTER,
-        DIANUI_CENTER,
-        DIANUI_WHITE);
-
-    rightEye = dianui_create_polygon(
-        (DianUI_Point){.x = eyeRightPosX, .y = eyeRightPosY},
-        normalEye,
-        DIANUI_CENTER,
-        DIANUI_CENTER,
-        DIANUI_WHITE);
-
-    textEl = dianui_create_text(0, 5, 128, 64, DIANUI_RIGHT, DIANUI_TOP, "Zzz", DIANUI_WHITE);
-    dianui_set_visible((DianUI_BaseElement *)textEl, false);
-}
-
-void dianui_set_emotion(Emotion emotion)
-{
-    targetEmotion = emotion;
-}
-
-const DianUI_Corner *EMOTION_REGISTRY_LEFT[] = {
+static const DianUI_Corner *EMOTION_REGISTRY_LEFT[] = {
     [IDLE] = normalEye,
     [HAPPY] = happyEye,
     [BLINK] = blinkEye,
@@ -149,7 +117,7 @@ const DianUI_Corner *EMOTION_REGISTRY_LEFT[] = {
     [ALMOST_DEAD] = almostDeadEyeLeft,
     [WINK] = winkLeftEye};
 
-const DianUI_Corner *EMOTION_REGISTRY_RIGHT[] = {
+static const DianUI_Corner *EMOTION_REGISTRY_RIGHT[] = {
     [IDLE] = normalEye,
     [HAPPY] = happyEye,
     [BLINK] = blinkEye,
@@ -158,190 +126,213 @@ const DianUI_Corner *EMOTION_REGISTRY_RIGHT[] = {
     [ALMOST_DEAD] = almostDeadEyeRight,
     [WINK] = winkRightEye};
 
+static inline int lerp_int(int start, int target, float t)
+{
+    return (int)roundf((float)start + ((float)(target - start) * t));
+}
+
+void dianui_face_init()
+{
+    leftEye = dianui_create_polygon(
+        (DianUI_Point){.x = EYE_LEFT_BASE_X, .y = EYE_COMMON_BASE_Y},
+        normalEye,
+        DIANUI_CENTER,
+        DIANUI_CENTER,
+        DIANUI_WHITE);
+
+    rightEye = dianui_create_polygon(
+        (DianUI_Point){.x = EYE_RIGHT_BASE_X, .y = EYE_COMMON_BASE_Y},
+        normalEye,
+        DIANUI_CENTER,
+        DIANUI_CENTER,
+        DIANUI_WHITE);
+
+    textEl = dianui_create_text(0, 10, 128, 64, DIANUI_RIGHT, DIANUI_TOP, "zzz", DIANUI_WHITE);
+    dianui_set_visible((DianUI_BaseElement *)textEl, false);
+}
+
+void dianui_set_emotion(Emotion emotion)
+{
+    targetEmotion = emotion;
+}
+
 void dianui_interpolate_emotion(DianUI_PolygonElement *polygon, const DianUI_Corner *fromCorners, const DianUI_Corner *toCorners, float t)
 {
     DianUI_Corner *currentCorners = polygon->corners;
 
     for (int i = 0; i < 4; i++)
     {
-        currentCorners[i].pos.x = (int)(fromCorners[i].pos.x * (1 - t) + toCorners[i].pos.x * t);
-        currentCorners[i].pos.y = (int)(fromCorners[i].pos.y * (1 - t) + toCorners[i].pos.y * t);
-        currentCorners[i].roundness = (int)(fromCorners[i].roundness * (1 - t) + toCorners[i].roundness * t);
+        currentCorners[i].pos.x = lerp_int(fromCorners[i].pos.x, toCorners[i].pos.x, t);
+        currentCorners[i].pos.y = lerp_int(fromCorners[i].pos.y, toCorners[i].pos.y, t);
+        currentCorners[i].roundness = lerp_int(fromCorners[i].roundness, toCorners[i].roundness, t);
     }
 }
 
-void dianui_update_face(uint32_t now)
+static void dianui_update_look(float dt)
 {
-    // Look around
-    if (currentEmotion != SLEEPY)
+    const float LOOK_ANIMATION_SPEED = 1.0f / 0.25f;
+
+    if (lookProgress < 1.0f)
     {
-        // X axis
-        if (progressEyePosX < 1.0f)
+        lookProgress += LOOK_ANIMATION_SPEED * dt;
+
+        if (lookProgress >= 1.0f)
         {
-            progressEyePosX += 0.25f;
-
-            if (progressEyePosX >= 1.0f)
-            {
-                progressEyePosX = 1.0f;
-            }
-
-            float invT = 1.0f - progressEyePosX;
-            float t_eased = 1.0f - (invT * invT * invT);
-
-            currentEyePosX = startEyePosX + (int)(t_eased * (targetEyePosX - startEyePosX));
-
-            leftEye->base.x = eyeLeftPosX + currentEyePosX;
-            rightEye->base.x = eyeRightPosX + currentEyePosX;
-        }
-        else if (now >= nextLookTime)
-        {
-            startEyePosX = currentEyePosX;
-            progressEyePosX = 0.0f;
-            targetEyePosX = ((rand() % 2) - 1) * 6;
+            lookProgress = 1.0f;
         }
 
-        // Y axis
-        if (progressEyePosY < 1.0f)
+        float t_eased = dianui_apply_easing(lookProgress, DIANUI_EASE_OUT_QUAD);
+
+        offset_look_x = lerp_int(startEyePosX, targetEyePosX, t_eased); // X axis
+        offset_look_y = lerp_int(startEyePosY, targetEyePosY, t_eased); // Y axis
+    }
+    else
+    {
+        nextLookTimer -= dt;
+
+        if (nextLookTimer <= 0.0f)
         {
-            progressEyePosY += 0.25f;
+            nextLookTimer = 2.0f + ((float)(rand() % 3000) / 1000.0f);
 
-            if (progressEyePosY >= 1.0f)
-            {
-                progressEyePosY = 1.0f;
-            }
+            targetEyePosX = ((rand() % 3) - 1) * 8;
+            targetEyePosY = ((rand() % 3) - 1) * 3;
 
-            float invT = 1.0f - progressEyePosY;
-            float t_eased = 1.0f - (invT * invT * invT);
+            startEyePosX = offset_look_x;
+            startEyePosY = offset_look_y;
 
-            currentEyePosY = startEyePosY + (int)(t_eased * (targetEyePosY - startEyePosY));
-
-            leftEye->base.y = eyeLeftPosY + currentEyePosY;
-            rightEye->base.y = eyeRightPosY + currentEyePosY;
-        }
-        else if (now >= nextLookTime)
-        {
-            startEyePosY = currentEyePosY;
-            progressEyePosY = 0.0f;
-            targetEyePosY = ((rand() % 2) - 1) * 3;
-        }
-
-        if (now >= nextLookTime)
-        {
-            nextLookTime = now + 4000 + (rand() % 3000);
+            lookProgress = 0.0f;
         }
     }
+}
 
-    // Snore animation
+static void dianui_update_blink(float dt)
+{
+    const float BLINK_ANIMATION_SPEED = 1.0f / 0.16f;
+
+    if (blinkProgress < 1.0f)
+    {
+        blinkProgress += BLINK_ANIMATION_SPEED * dt;
+
+        if (blinkProgress >= 1.0f)
+        {
+            blinkProgress = 1.0f;
+            nextBlinkTimer = 2.0f + ((float)(rand() % 2000) / 1000.0f);
+        }
+
+        float t_eased = 4.0f * blinkProgress * (1.0f - blinkProgress);
+
+        dianui_interpolate_emotion(leftEye, EMOTION_REGISTRY_LEFT[currentEmotion], EMOTION_REGISTRY_LEFT[BLINK], t_eased);
+        dianui_interpolate_emotion(rightEye, EMOTION_REGISTRY_RIGHT[currentEmotion], EMOTION_REGISTRY_RIGHT[BLINK], t_eased);
+    }
+    else
+    {
+        nextBlinkTimer -= dt;
+
+        if (nextBlinkTimer <= 0.0f)
+            blinkProgress = 0.0f;
+    }
+}
+
+static void dianui_update_snore(float dt)
+{
+    const float SNORE_ANIMATION_SPEED = 1.0f / 1.5f;
+
+    if (snoreProgress < 1.0f)
+    {
+        snoreProgress += SNORE_ANIMATION_SPEED * dt;
+
+        if (snoreProgress >= 1.0f)
+        {
+            snoreProgress = 1.0f;
+            nextSnoreTimer = 3.0f;
+        }
+
+        float t_eased = 5.0f * snoreProgress * (1.0f - snoreProgress);
+
+        if (t_eased > 1.0f)
+        {
+            t_eased = 1.0f;
+        }
+
+        offset_snore_y = lerp_int(5, -5, t_eased);
+    }
+    else
+    {
+        nextSnoreTimer -= dt;
+
+        if (nextSnoreTimer <= 0.0f)
+            snoreProgress = 0.0f;
+    }
+}
+
+static void dianui_update_emotion(float dt)
+{
+    const float EMOTION_CHANGE_SPEED = 1.0f / 0.3f;
+
+    if (currentEmotion != targetEmotion)
+    {
+        emotionsProgress += EMOTION_CHANGE_SPEED * dt;
+
+        if (emotionsProgress >= 1.0f)
+        {
+            emotionsProgress = 1.0f;
+            currentEmotion = targetEmotion;
+        }
+
+        float t_eased = dianui_apply_easing(emotionsProgress, DIANUI_EASE_OUT_BACK);
+
+        dianui_interpolate_emotion(leftEye, EMOTION_REGISTRY_LEFT[currentEmotion], EMOTION_REGISTRY_LEFT[targetEmotion], t_eased);
+        dianui_interpolate_emotion(rightEye, EMOTION_REGISTRY_RIGHT[currentEmotion], EMOTION_REGISTRY_RIGHT[targetEmotion], t_eased);
+    }
+    else
+    {
+        emotionsProgress = 0.0f;
+    }
+}
+
+void dianui_update_face()
+{
+    float dt = dianui_time_get_dt();
+
     if (currentEmotion == SLEEPY)
     {
-        // dianui_set_visible((DianUI_BaseElement *)textEl, true);
-        if (now >= nextSnoreTime)
-        {
-            if (snoreDirection)
-            {
-                snoreCurrent -= 1;
+        offset_look_x = 0;
+        offset_look_y = 0;
+        lookProgress = 1.0f;
 
-                if (snoreCurrent <= snoreTarget)
-                {
-                    snoreCurrent = snoreTarget;
-                    snoreDirection = false;
-                    nextSnoreTime = now + 1000;
-                }
-            }
-            else
-            {
-                snoreCurrent += 1;
+        dianui_set_visible((DianUI_BaseElement *)textEl, true);
 
-                if (snoreCurrent >= 0)
-                {
-                    snoreCurrent = 0;
-                    snoreDirection = true;
-                    nextSnoreTime = now + 3000;
-                }
-            }
-        }
-
-        float t = 0.0f;
-        if (snoreTarget != 0)
-        {
-            t = (float)snoreCurrent / (float)snoreTarget;
-        }
-
-        float invT = 1.0f - t;
-        float t_eased = 1.0f - (invT * invT * invT);
-
-        int offsetY = (int)(t_eased * snoreTarget);
-
-        leftEye->base.y = eyeLeftPosY + offsetY;
-        rightEye->base.y = eyeRightPosY + offsetY;
+        // SNORE
+        dianui_update_snore(dt);
     }
     else
     {
-        snoreCurrent = 0;
-        snoreDirection = true;
-        nextSnoreTime = now + 3000;
-        // leftEye->base.y = 30;
-        // rightEye->base.y = 30;
+        offset_snore_y = 0;
+        snoreProgress = 1.0f;
+
         dianui_set_visible((DianUI_BaseElement *)textEl, false);
+
+        // LOOK AROUND
+        dianui_update_look(dt);
+
+        // BLINK
+        if (currentEmotion == targetEmotion)
+            dianui_update_blink(dt);
     }
 
-    // Blink
-    if (!isBlinking && now >= nextBlinkTime && currentEmotion != SLEEPY)
-    {
-        isBlinking = true;
-        blinkStartTime = now;
-    }
+    // UPDATE EMOTION
+    dianui_update_emotion(dt);
 
-    if (isBlinking)
-    {
-        uint32_t elapsed = now - blinkStartTime;
-        uint32_t halfDuration = BLINK_DURATION / 2;
+    int finalLeftEyeX = EYE_LEFT_BASE_X + offset_look_x;
+    int finalRightEyeX = EYE_RIGHT_BASE_X + offset_look_x;
 
-        if (elapsed < halfDuration)
-        {
-            float t = (float)elapsed / (float)halfDuration;
-            dianui_interpolate_emotion(leftEye, EMOTION_REGISTRY_LEFT[currentEmotion], EMOTION_REGISTRY_LEFT[BLINK], t);
-            dianui_interpolate_emotion(rightEye, EMOTION_REGISTRY_RIGHT[currentEmotion], EMOTION_REGISTRY_RIGHT[BLINK], t);
-        }
-        else if (elapsed < BLINK_DURATION)
-        {
-            float t = (float)(elapsed - halfDuration) / (float)halfDuration;
-            dianui_interpolate_emotion(leftEye, EMOTION_REGISTRY_LEFT[BLINK], EMOTION_REGISTRY_LEFT[currentEmotion], t);
-            dianui_interpolate_emotion(rightEye, EMOTION_REGISTRY_RIGHT[BLINK], EMOTION_REGISTRY_RIGHT[currentEmotion], t);
-        }
-        else
-        {
-            isBlinking = false;
-            dianui_interpolate_emotion(leftEye, EMOTION_REGISTRY_LEFT[currentEmotion], EMOTION_REGISTRY_LEFT[currentEmotion], 1.0f);
-            dianui_interpolate_emotion(rightEye, EMOTION_REGISTRY_RIGHT[currentEmotion], EMOTION_REGISTRY_RIGHT[currentEmotion], 1.0f);
-            nextBlinkTime = now + 1000 + (rand() % 2000);
-        }
-    }
+    int finalCommonEyeY = EYE_COMMON_BASE_Y + offset_look_y + offset_snore_y;
 
-    // Update emotion
-    else
-    {
-        if (currentEmotion != targetEmotion)
-        {
-            progress_linear += 0.35f;
+    leftEye->base.x = finalLeftEyeX;
+    rightEye->base.x = finalRightEyeX;
 
-            if (progress_linear > 1.0f)
-            {
-                progress_linear = 1.0f;
-                currentEmotion = targetEmotion;
-            }
-
-            float invT = 1.0f - progress_linear;
-            float t_eased = 1.0f - 1.3f * invT * invT * invT + 0.3f * invT;
-
-            dianui_interpolate_emotion(leftEye, EMOTION_REGISTRY_LEFT[currentEmotion], EMOTION_REGISTRY_LEFT[targetEmotion], t_eased);
-            dianui_interpolate_emotion(rightEye, EMOTION_REGISTRY_RIGHT[currentEmotion], EMOTION_REGISTRY_RIGHT[targetEmotion], t_eased);
-        }
-        else
-        {
-            progress_linear = 0.0f;
-        }
-    }
+    leftEye->base.y = finalCommonEyeY;
+    rightEye->base.y = finalCommonEyeY;
 
     dianui_mark_dirty((DianUI_BaseElement *)leftEye);
     dianui_mark_dirty((DianUI_BaseElement *)rightEye);
