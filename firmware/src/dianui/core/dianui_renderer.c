@@ -14,7 +14,9 @@ void dianui_draw_char(char c, int x, int y, DianUI_Color color)
 
     DianUI_HAL *hal = dianui_engine_get_hal();
 
-    const uint8_t *char_bitmap = font[(int)c];
+    uint8_t uc = (uint8_t)c;
+    if (uc >= DIANUI_MAX_CHAR) return;
+    const uint8_t *char_bitmap = font[uc];
 
     for (int row = 0; row < DIANUI_FONT_HEIGHT; row++)
     {
