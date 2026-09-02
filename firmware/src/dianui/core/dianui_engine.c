@@ -3,7 +3,8 @@
 #include "dianui_engine_private.h"
 #include "dianui_renderer.h"
 #include "dianui_config.h"
-#include "../elements/dianui_element.h"
+#include "dianui/elements/dianui_element.h"
+#include "dianui/widget/dianui_widget.h"
 #include <string.h>
 #include <stdint.h>
 
@@ -113,4 +114,5 @@ void dianui_reset(void)
 {
     element_count = 0;
     dianui_elements_reset();
+    dianui_widget_reset();
 }
