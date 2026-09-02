@@ -128,10 +128,22 @@ typedef struct DianUI_QRCodeElement
 } DianUI_QRCodeElement;
 
 /* Page element */
+typedef enum DianUI_NavEvent
+{
+    DIANUI_NAV_NONE = 0,
+    DIANUI_NAV_PREV,
+    DIANUI_NAV_NEXT,
+    DIANUI_NAV_SELECT,
+    DIANUI_NAV_BACK
+} DianUI_NavEvent;
+
 typedef struct DianUI_Page
 {
     const char *name;
     void (*on_load)(void);
+    void (*on_update)(float dt);
+    void (*on_input)(DianUI_NavEvent event);
+    void (*on_exit)(void);
 } DianUI_Page;
 
 #endif // DIANUI_TYPES_H
