@@ -75,4 +75,6 @@ bool dianui_is_animation_complete(DianUI_Animation *anim);
  */
 void dianui_update_animations(uint32_t current_time_ms);
 
+void dianui_reset_animations();
+
 #endif // DIANUI_ANIMATION_H

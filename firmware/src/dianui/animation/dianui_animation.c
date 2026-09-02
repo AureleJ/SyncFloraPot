@@ -87,3 +87,8 @@ void dianui_update_animations(uint32_t current_time_ms)
         anim->target->dirty = true;
     }
 }
+
+void dianui_reset_animations()
+{
+    animation_pool_index = 0;
+}
