@@ -3,7 +3,8 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "driver/gpio.h"
 
-void srv_button_task(void *pvParameters);
+void srv_button_init(gpio_num_t button_pin);
 
 #endif // SRV_BUTTON_H
