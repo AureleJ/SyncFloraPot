@@ -12,6 +12,7 @@ typedef struct DianUI_HAL
 {
     void (*set_pixel)(int x, int y, DianUI_Color color);          /* Set a single pixel */
     void (*set_hline)(int x1, int x2, int y, DianUI_Color color); /* Set a horizontal line */
+    void (*set_vline)(int x, int y1, int y2, DianUI_Color color); /* Set a vertical line */
     void (*clear)(void);                                          /* Clear the display buffer */
     void (*update)(void);                                         /* Flush buffer to display */
     void (*set_contrast)(uint8_t contrast);                       /* Set display contrast */

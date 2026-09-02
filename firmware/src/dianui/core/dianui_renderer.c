@@ -70,6 +70,12 @@ void dianui_draw_hline(int x1, int x2, int y, DianUI_Color color)
     hal->set_hline(x1, x2, y, color);
 }
 
+void dianui_draw_vline(int x, int y1, int y2, DianUI_Color color)
+{
+    DianUI_HAL *hal = dianui_engine_get_hal();
+    hal->set_vline(x, y1, y2, color);
+}
+
 void dianui_draw_line(int x1, int y1, int x2, int y2, DianUI_Color color)
 {
     DianUI_HAL *hal = dianui_engine_get_hal();
