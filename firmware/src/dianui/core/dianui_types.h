@@ -140,7 +140,7 @@ typedef enum DianUI_NavEvent
 typedef struct DianUI_Page
 {
     const char *name;
-    void (*on_load)(void);
+    void (*on_enter)(void);
     void (*on_update)(float dt);
     void (*on_input)(DianUI_NavEvent event);
     void (*on_exit)(void);

@@ -29,13 +29,13 @@ void dianui_init_router(const DianUI_Page *const *table, int table_size, int roo
     current_page_id = root_page_id;
     current_page = page_table[current_page_id];
 
-    if (current_page && current_page->on_load)
-        current_page->on_load();
+    if (current_page && current_page->on_enter)
+        current_page->on_enter();
 }
 
 void dianui_router_push(int page_id)
 {
-    if (page_id >= page_count || page_id == current_page_id)
+    if (page_id >= page_count || page_id == current_page_id || page_id < 0)
         return;
 
     if (history_top < DIANUI_MAX_PAGE_HISTORY - 1)
@@ -71,8 +71,8 @@ static void dianui_load_page(int page_id)
     current_page_id = page_id;
     current_page = page_table[current_page_id];
 
-    if (current_page && current_page->on_load)
-        current_page->on_load();
+    if (current_page && current_page->on_enter)
+        current_page->on_enter();
 
     dianui_render();
 }
