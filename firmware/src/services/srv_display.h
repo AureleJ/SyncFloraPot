@@ -4,6 +4,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
-void srv_display_task(void *pvParameters);
+void srv_display_init();
 
 #endif // SRV_DISPLAY_H
