@@ -5,23 +5,26 @@
 #include "hal/adc_types.h"
 
 // ADC channels
-#define MOISTURE_ADC_CHANNEL GPIO_NUM_2
-#define LDR_ADC_CHANNEL GPIO_NUM_3
+#define MOISTURE_ADC_CHANNEL GPIO_NUM_3
+#define LDR_ADC_CHANNEL GPIO_NUM_4
 
 // GPIO pins
-#define DHT11_GPIO_PIN GPIO_NUM_4
-#define MOISTURE_POWER_GPIO GPIO_NUM_5
-#define OLED_SDA_PIN GPIO_NUM_6
-#define OLED_SCL_PIN GPIO_NUM_7 
+#define SDA_PIN GPIO_NUM_6
+#define SCL_PIN GPIO_NUM_7 
+#define MOISTURE_POWER_GPIO GPIO_NUM_2
 #define PUMP_GPIO_PIN GPIO_NUM_10
 #define ULTRASONIC_ECHO_PIN GPIO_NUM_20
 #define ULTRASONIC_TRIG_PIN GPIO_NUM_21
+#define BUTTON_GPIO_PIN GPIO_NUM_5
 
 // Thresholds
-#define MOISTURE_THRESHOLD 10 // Percentage below which we consider the soil "dry"
-#define WATER_LEVEL_THRESHOLD 20.0f // Distance in cm below which we consider the water level "low"
+#define LDR_NIGHT_THRESHOLD 15
+#define MOISTURE_DRY_THRESHOLD 5
+#define MOISTURE_HALF_DRY_THRESHOLD 15
+#define WATER_LEVEL_MIN_THRESHOLD 4.5f
+#define WATER_LEVEL_MAX_THRESHOLD 1.5f
 
 // Timings
-#define MONITORING_INTERVAL_MS 10000 // Interval between sensor readings
+#define MONITORING_INTERVAL_MS 1000 // Interval between sensor readings
 
 #endif // CONFIG_H
