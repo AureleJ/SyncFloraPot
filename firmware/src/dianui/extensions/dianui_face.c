@@ -24,10 +24,10 @@ static const DianUI_Corner normalEye[4] = {
 
 // Happy
 static const DianUI_Corner happyEye[4] = {
-    {.pos = {.x = 0, .y = 0}, .roundness = 6},
-    {.pos = {.x = 20, .y = 0}, .roundness = 6},
-    {.pos = {.x = 20, .y = 8}, .roundness = 0},
-    {.pos = {.x = 0, .y = 8}, .roundness = 0}};
+    {.pos = {.x = 0, .y = 0}, .roundness = 8},
+    {.pos = {.x = 22, .y = 0}, .roundness = 8},
+    {.pos = {.x = 22, .y = 24}, .roundness = 8},
+    {.pos = {.x = 0, .y = 24}, .roundness = 8}};
 
 // Sleepy
 static const DianUI_Corner sleepyEye[4] = {
@@ -108,7 +108,7 @@ static const int EYE_LEFT_BASE_X = 45;
 static const int EYE_RIGHT_BASE_X = 85;
 static const int EYE_COMMON_BASE_Y = 35;
 
-static const DianUI_Corner *EMOTION_REGISTRY_LEFT[] = {
+static const DianUI_Corner *const EMOTION_REGISTRY_LEFT[] = {
     [IDLE] = normalEye,
     [HAPPY] = happyEye,
     [BLINK] = blinkEye,
@@ -117,7 +117,7 @@ static const DianUI_Corner *EMOTION_REGISTRY_LEFT[] = {
     [ALMOST_DEAD] = almostDeadEyeLeft,
     [WINK] = winkLeftEye};
 
-static const DianUI_Corner *EMOTION_REGISTRY_RIGHT[] = {
+static const DianUI_Corner *const EMOTION_REGISTRY_RIGHT[] = {
     [IDLE] = normalEye,
     [HAPPY] = happyEye,
     [BLINK] = blinkEye,
@@ -135,19 +135,19 @@ void dianui_face_init()
 {
     leftEye = dianui_create_polygon(
         (DianUI_Point){.x = EYE_LEFT_BASE_X, .y = EYE_COMMON_BASE_Y},
-        normalEye,
+        EMOTION_REGISTRY_LEFT[targetEmotion],
         DIANUI_CENTER,
         DIANUI_CENTER,
         DIANUI_WHITE);
 
     rightEye = dianui_create_polygon(
         (DianUI_Point){.x = EYE_RIGHT_BASE_X, .y = EYE_COMMON_BASE_Y},
-        normalEye,
+        EMOTION_REGISTRY_RIGHT[targetEmotion],
         DIANUI_CENTER,
         DIANUI_CENTER,
         DIANUI_WHITE);
 
-    textEl = dianui_create_text(0, 10, 128, 64, DIANUI_RIGHT, DIANUI_TOP, "zzz", DIANUI_WHITE);
+    textEl = dianui_create_text(0, 25, 128, 64, DIANUI_RIGHT, DIANUI_TOP, "zzz", DIANUI_WHITE);
     dianui_set_visible((DianUI_BaseElement *)textEl, false);
 }
 
@@ -195,7 +195,7 @@ static void dianui_update_look(float dt)
             nextLookTimer = 2.0f + ((float)(rand() % 3000) / 1000.0f);
 
             targetEyePosX = ((rand() % 3) - 1) * 8;
-            targetEyePosY = ((rand() % 3) - 1) * 3;
+            targetEyePosY = ((rand() % 3) - 1) * 2; 
 
             startEyePosX = offset_look_x;
             startEyePosY = offset_look_y;
@@ -254,6 +254,7 @@ static void dianui_update_snore(float dt)
             t_eased = 1.0f;
         }
 
+        textEl->base.y = lerp_int(25, 15, t_eased);
         offset_snore_y = lerp_int(5, -5, t_eased);
     }
     else
