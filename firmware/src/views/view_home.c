@@ -1,55 +1,72 @@
 #include "views.h"
 #include "dianui/extensions/dianui_face.h"
 #include "core/sensor_state.h"
+#include "config.h"
+#include <time.h>
 
 #define ICON_SIZE 8
-static const uint8_t icon_wifi[ICON_SIZE] = {0x80, 0x80, 0xA0, 0xA0, 0xA8, 0xA8, 0xAA, 0xAA};
+static const uint8_t icon_water_drop[ICON_SIZE] = {0x18, 0x18, 0x3C, 0x2C, 0x4E, 0x4E, 0x7E, 0x3C};
+static const uint8_t icon_water_drop_empty[ICON_SIZE] = {0x18, 0x18, 0x24, 0x24, 0x42, 0x42, 0x42, 0x3C};
 
 static DianUI_TextElement *timeText = 0;
-static DianUI_IconElement *wifiIcon = 0;
-
-static DianUI_TextElement *moistureText = 0;
-static DianUI_TextElement *waterLevelText = 0;
-static DianUI_TextElement *ldrText = 0;
+static DianUI_IconElement *waterDropIcons[5] = {0};
 
 static void view_home_enter(void)
 {
-    wifiIcon = dianui_create_icon(0, 0, 128, 8, DIANUI_LEFT, DIANUI_CENTER, icon_wifi, ICON_SIZE);
-    timeText = dianui_create_text(0, 0, 128, 8, DIANUI_RIGHT, DIANUI_CENTER, "10:09", DIANUI_WHITE);
+    for (int i = 0; i < 5; i++)
+    {
+        waterDropIcons[i] = dianui_create_icon(i * (ICON_SIZE + 2), 0, ICON_SIZE, ICON_SIZE, DIANUI_LEFT, DIANUI_BOTTOM, icon_water_drop, ICON_SIZE);
+    }
+
+    timeText = dianui_create_text(0, 0, 128, 8, DIANUI_RIGHT, DIANUI_CENTER, "00:00", DIANUI_WHITE);
 
     dianui_face_init();
-
-    moistureText = dianui_create_text(0, -8, 128, 64, DIANUI_LEFT, DIANUI_BOTTOM, "--%", DIANUI_WHITE);
-    ldrText = dianui_create_text(40, -8, 128, 64, DIANUI_LEFT, DIANUI_BOTTOM, "--%", DIANUI_WHITE);
-    waterLevelText = dianui_create_text(90, -8, 128, 64, DIANUI_LEFT, DIANUI_BOTTOM, "--cm", DIANUI_WHITE);
 }
 
-static char moisture_buf[16];
-static char water_level_buf[16];
-static char ldr_buf[16];
+static int last_water_level = -1;
 
 static void view_home_update(float dt)
 {
     plant_data_t data = sensor_state_get_copy();
+    
+    // Update water level icons
+    if (data.water_level != last_water_level)
+    {
+        int drops = 1 + (data.water_level * 4) / 100;
+        if (drops < 1)
+            drops = 1;
+        if (drops > 5)
+            drops = 5;
 
-    snprintf(water_level_buf, sizeof(water_level_buf), "%dcm", (int)data.water_level);
-    dianui_update_text(waterLevelText, water_level_buf);
+        for (int i = 0; i < 5; i++)
+        {
+            if (i < drops)
+            {
+                dianui_update_icon(waterDropIcons[i], icon_water_drop, ICON_SIZE);
+            }
+            else
+            {
+                dianui_update_icon(waterDropIcons[i], icon_water_drop_empty, ICON_SIZE);
+            }
+        }
 
-    snprintf(moisture_buf, sizeof(moisture_buf), "%d%%", data.soil_moisture);
-    dianui_update_text(moistureText, moisture_buf);
+        last_water_level = data.water_level;
+    }
 
-    snprintf(ldr_buf, sizeof(ldr_buf), "%d%%", data.light);
-    dianui_update_text(ldrText, ldr_buf);
-
-    if (data.light <= 15)
+    // Update face 
+    if (data.pump_state == true)
+    {
+        dianui_set_emotion(HAPPY);
+    }
+    else if (data.light <= LDR_NIGHT_THRESHOLD)
     {
         dianui_set_emotion(SLEEPY);
     }
-    else if (data.soil_moisture <= 5)
+    else if (data.soil_moisture <= MOISTURE_DRY_THRESHOLD)
     {
         dianui_set_emotion(ALMOST_DEAD);
     }
-    else if (data.soil_moisture <= 15)
+    else if (data.soil_moisture <= MOISTURE_HALF_DRY_THRESHOLD)
     {
         dianui_set_emotion(THIRSTY);
     }
@@ -59,6 +76,18 @@ static void view_home_update(float dt)
     }
 
     dianui_update_face();
+
+    // Update time
+    static char current_time[6];
+
+    time_t now;
+    struct tm local_time;
+
+    time(&now);
+    localtime_r(&now, &local_time);
+
+    strftime(current_time, sizeof(current_time), "%H:%M", &local_time);
+    dianui_update_text(timeText, current_time);
 }
 
 static void view_home_action(DianUI_NavEvent action)
