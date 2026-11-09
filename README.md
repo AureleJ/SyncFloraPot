@@ -1,10 +1,10 @@
 # 🪴 SyncFloraPot
 
 [![Site Web](https://img.shields.io/badge/Project-Live_Demo-brightgreen)](https://aurelejoblet.com/project/syncflorapot)
-[![Platform](https://img.shields.io/badge/Platform-ESP32%20%7C%20Android%20%7C%20iOS-blue)](#)
+[![Platform](https://img.shields.io/badge/Platform-ESP32%20%7C%20Android-blue)](#)
 [![Status](https://img.shields.io/badge/Status-In--Progress-orange)](#)
 
-**SyncFloraPot** is an end-to-end IoT ecosystem designed for smart plant care. It combines custom embedded firmware, a scalable backend, and a cross-platform mobile application to provide real-time monitoring and automated watering.
+**SyncFloraPot** is an end-to-end IoT ecosystem designed for smart plant care. It combines custom embedded firmware, a custom KiCad-designed PCB, a time-series backend, and a native Android application to provide real-time monitoring and automated watering.
 
 🔗 **Detailed Project Overview:** [aurelejoblet.com/project/syncflorapot](https://aurelejoblet.com/project/syncflorapot)
 
@@ -12,30 +12,37 @@
 
 ## 🚀 Overview
 
-SyncFloraPot isn't just a smart pot, it's a complete monitoring solution. It tracks soil moisture, ambient temperature, and light levels, allowing users to interact with their plants through a dedicated mobile interface.
+SyncFloraPot isn't just a smart pot, it's a complete monitoring solution. It tracks soil moisture, light level, and water reservoir level, allowing users to interact with their plants through a dedicated mobile interface. The onboard OLED screen runs **DianUI**, a custom graphics engine built from scratch for this kind of embedded display.
 
 ### Key Features
-- **Real-time Data:** Live sensor feedback via MQTT/WebSockets.
-- **Automated Irrigation:** Smart watering logic based on soil moisture thresholds.
-- **Cross-Platform Control:** Monitor your plants from anywhere using the mobile app.
+- **Real-time Data:** Live sensor feedback via MQTT, pushed to the app over WebSockets (Socket.io).
+- **Automated Irrigation:** Smart watering logic based on soil moisture thresholds, pump driven through a switching transistor with a hardware safety timer.
+- **Local Alerts:** On-device Android notifications (with a per-sensor cooldown) when soil moisture or water level gets too low.
+- **BLE Provisioning:** Wi-Fi setup directly from the mobile app, no hardcoded credentials.
+
 ---
 
 ## 🛠 Technical Stack & Architecture
 
 ### 📁 [Firmware](./firmware)
-* **Hardware:** ESP32 Microcontroller.
-* **Framework:** ESP-IDF.
-* **Sensors:** Capacitive soil moisture sensor, DHT22 (Temp/Hum), Light intensity sensor.
-* **Communication:** Wi-Fi, MQTT protocol.
+* **Hardware:** ESP32-C3 Microcontroller.
+* **Framework:** ESP-IDF, FreeRTOS.
+* **Sensors:** Capacitive soil moisture sensor, LDR (light level), ultrasonic sensor (reservoir water level).
+* **Communication:** Wi-Fi, MQTT, BLE (Wi-Fi provisioning).
+* **Display:** OLED over I2C, driven by DianUI (custom C rendering engine).
+
+### 📁 [Hardware](./hardware)
+* **Design:** Custom PCB in KiCad features power supply, sensor interfacing and pump control.
 
 ### 📁 [Client](./client)
-* **Framework:** React Native / Expo.
-* **Features:** Real-time dashboards, push notifications for low water levels, and manual override controls.
+* **Framework:** Native Android, Kotlin + Jetpack Compose.
+* **Features:** Real-time dashboard, local alert notifications, BLE provisioning flow, manual watering override.
 
 ### 📁 [Backend](./backend)
-* **Environment:** Node.js.
-* **Database:** MongoDB/PostgreSQL for historical data logging.
-* **Communication:** Integrated MQTT Broker for hardware-to-cloud messaging.
+* **Environment:** Node.js, Express.
+* **Database:** PostgreSQL with the TimescaleDB extension, for time-series sensor history.
+* **Communication:** Mosquitto MQTT broker for device-to-cloud messaging, Socket.io for live updates to the app.
+* **Auth:** JWT-based user authentication.
 
 ---
 
@@ -43,30 +50,15 @@ SyncFloraPot isn't just a smart pot, it's a complete monitoring solution. It tra
 
 ```txt
 SyncFloraPot/
-├── firmware/   # ESP32 Firmware code (ESP-IDF)
-├── client/     # Mobile application (Android/iOS)
-└── backend/    # Server logic and database management
+├── firmware/   # ESP32-C3 firmware (ESP-IDF, FreeRTOS)
+├── hardware/   # KiCad PCB design 
+├── client/     # Native Android app (Kotlin, Jetpack Compose)
+└── backend/    # Server, database and MQTT broker setup
 
 ```
-
----
-
-## 🔧 Installation & Setup
-
-1. **Clone the repo:**
-```bash
-git clone [https://github.com/AureleJ/SyncFloraPot.git](https://github.com/AureleJ/SyncFloraPot.git)
-
-```
-
-2. **Firmware:** Navigate to `/firmware` and follow the `idf.py build` instructions.
-3. **Mobile App:** Run `npm install` in `/client` then `npx expo start`.
-4. **Backend:** Configure your `.env` in `/backend` and run `npm start`.
-
----
 
 ## 👤 Author
 
-**Aurèle Joblet** Engineering Student at ESIEA | Embedded Systems & Software Development
+**Aurèle Joblet** - Engineering Student at ESIEA
 
-🌐 [Portfolio](https://aurelejoblet.com) | [LinkedIn](https://www.google.com/search?q=https://www.linkedin.com/in/aurele-joblet/)
+🌐 [Portfolio](https://aurelejoblet.com) | [LinkedIn](https://www.linkedin.com/in/aurele-joblet/)
