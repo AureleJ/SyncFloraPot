@@ -15,11 +15,11 @@ typedef enum DianUI_AnimationType
 typedef struct DianUI_Animation
 {
     DianUI_AnimationType type;
-    int duration_ms;
-    int delay_ms;
-    int fromValue;
-    int toValue;
-    int currentValue;
+    uint32_t duration_ms;
+    uint32_t delay_ms;
+    int16_t fromValue;
+    int16_t toValue;
+    int16_t currentValue;
     bool loop;
     DianUI_BaseElement *target;
     DianUI_EasingType easing;
@@ -45,7 +45,7 @@ typedef struct DianUI_Animation
  *
  * @return Pointer to the created animation, or NULL if the animation pool is full.
  */
-DianUI_Animation *dianui_animate_element(DianUI_BaseElement *element, DianUI_AnimationType type, int duration_ms, int delay_ms, int fromValue, int toValue, bool loop, DianUI_EasingType easing);
+DianUI_Animation *dianui_animate_element(DianUI_BaseElement *element, DianUI_AnimationType type, uint32_t duration_ms, uint32_t delay_ms, int16_t fromValue, int16_t toValue, bool loop, DianUI_EasingType easing);
 
 /**
  * @brief Start an animation previously created with @ref dianui_animate_element.

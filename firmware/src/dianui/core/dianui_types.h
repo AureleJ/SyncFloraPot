@@ -32,20 +32,20 @@ typedef enum DianUI_ShapeType
 /* Point */
 typedef struct DianUI_Point
 {
-    int x, y;
+    int16_t x, y;
 } DianUI_Point;
 
 /* Size */
 typedef struct DianUI_Size
 {
-    int w, h;
+    int16_t w, h;
 } DianUI_Size;
 
 /* Base element */
 typedef struct DianUI_BaseElement
 {
-    int x, y;                                        /* Position in pixels */
-    int w, h;                                        /* Size in pixels */
+    int16_t x, y;                                    /* Position in pixels (signed: elements can be animated off-screen) */
+    int16_t w, h;                                    /* Size in pixels */
     DianUI_Anchor xAnchor;                           /* Horizontal alignment within bounds */
     DianUI_Anchor yAnchor;                           /* Vertical alignment within bounds */
     bool border;                                     /* Draw a border around the element */
@@ -59,7 +59,7 @@ typedef struct DianUI_IconElement
 {
     DianUI_BaseElement base;
     const uint8_t *iconData; /* Pointer to bitmap data */
-    int iconSize;            /* Icon width/height in pixels */
+    uint8_t iconSize;        /* Icon width/height in pixels */
 } DianUI_IconElement;
 
 /* Text element */
@@ -69,8 +69,8 @@ typedef struct DianUI_TextElement
     const char *text;        /* Pointer to string */
     DianUI_Color color;      /* Text color */
     const uint8_t *iconData; /* Optional icon displayed before text */
-    int iconSize;            /* Icon width/height in pixels */
-    int iconGap;             /* Gap in pixels between icon and text */
+    uint8_t iconSize;        /* Icon width/height in pixels */
+    uint8_t iconGap;         /* Gap in pixels between icon and text */
 } DianUI_TextElement;
 
 /* Filled rectangle element */
@@ -109,7 +109,7 @@ typedef struct DianUI_TriangleElement
 typedef struct
 {
     DianUI_Point pos;
-    int roundness;
+    uint8_t roundness;
 } DianUI_Corner;
 
 typedef struct

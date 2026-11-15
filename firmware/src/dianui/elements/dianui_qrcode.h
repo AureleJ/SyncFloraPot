@@ -15,7 +15,7 @@
  * @param data String to encode in the QR code.
  * @return Pointer to the created QR code element, or NULL if the QR code pool is full.
  */
-DianUI_QRCodeElement *dianui_create_qr_code(int x, int y, int w, int h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, const char *data);
+DianUI_QRCodeElement *dianui_create_qr_code(int16_t x, int16_t y, int16_t w, int16_t h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, const char *data);
 
 /**
  * @brief Reset the QR code element pool.

@@ -6,11 +6,11 @@
 #include <string.h>
 
 static DianUI_TextElement text_pool[DIANUI_MAX_TEXT];
-static int text_pool_index = 0;
+static uint8_t text_pool_index = 0;
 
 static void draw_text_element(DianUI_BaseElement *self);
 
-DianUI_TextElement *dianui_create_text(int x, int y, int w, int h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, const char *text, DianUI_Color color)
+DianUI_TextElement *dianui_create_text(int16_t x, int16_t y, int16_t w, int16_t h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, const char *text, DianUI_Color color)
 {
     if (text_pool_index >= DIANUI_MAX_TEXT)
     {
@@ -36,7 +36,7 @@ DianUI_TextElement *dianui_create_text(int x, int y, int w, int h, DianUI_Anchor
     return el;
 }
 
-void dianui_add_icon_to_text(DianUI_TextElement *textEl, const uint8_t *iconData, int iconSize, int gap)
+void dianui_add_icon_to_text(DianUI_TextElement *textEl, const uint8_t *iconData, uint8_t iconSize, uint8_t gap)
 {
     textEl->iconData = iconData;
     textEl->iconSize = iconSize;
@@ -92,11 +92,11 @@ static void draw_text_element(DianUI_BaseElement *self)
         dianui_draw_shape(self->x, self->y, self->w, self->h, DIANUI_WHITE);
     }
 
-    int x = self->x;
-    int y = self->y;
+    int16_t x = self->x;
+    int16_t y = self->y;
 
-    int text_height = DIANUI_FONT_HEIGHT;
-    int text_width = strlen(el->text) * DIANUI_FONT_WIDTH;
+    uint8_t text_height = DIANUI_FONT_HEIGHT;
+    uint16_t text_width = strlen(el->text) * DIANUI_FONT_WIDTH;
 
     if (self->xAnchor == DIANUI_CENTER)
     {

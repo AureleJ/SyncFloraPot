@@ -18,12 +18,12 @@ DianUI_PolygonElement *dianui_create_polygon(DianUI_Point pos, const DianUI_Corn
     }
 
     // Bounding box computation
-    int minX = corners[0].pos.x;
-    int maxX = corners[0].pos.x;
-    int minY = corners[0].pos.y;
-    int maxY = corners[0].pos.y;
+    int16_t minX = corners[0].pos.x;
+    int16_t maxX = corners[0].pos.x;
+    int16_t minY = corners[0].pos.y;
+    int16_t maxY = corners[0].pos.y;
 
-    for (int i = 1; i < 4; i++)
+    for (uint8_t i = 1; i < 4; i++)
     {
         if (corners[i].pos.x < minX)
             minX = corners[i].pos.x;
@@ -61,16 +61,16 @@ static void draw_polygon_element(DianUI_BaseElement *self)
         return;
 
     DianUI_PolygonElement *el = (DianUI_PolygonElement *)self;
-    int screenW = dianui_get_screen_width();
-    int screenH = dianui_get_screen_height();
+    int16_t screenW = (int16_t)dianui_get_screen_width();
+    int16_t screenH = (int16_t)dianui_get_screen_height();
 
     // Anchor on the center of the polygon
-    int minX = el->corners[0].pos.x;
-    int maxX = el->corners[0].pos.x;
-    int minY = el->corners[0].pos.y;
-    int maxY = el->corners[0].pos.y;
+    int16_t minX = el->corners[0].pos.x;
+    int16_t maxX = el->corners[0].pos.x;
+    int16_t minY = el->corners[0].pos.y;
+    int16_t maxY = el->corners[0].pos.y;
 
-    for (int i = 1; i < 4; i++)
+    for (uint8_t i = 1; i < 4; i++)
     {
         if (el->corners[i].pos.x < minX) minX = el->corners[i].pos.x;
         if (el->corners[i].pos.x > maxX) maxX = el->corners[i].pos.x;
@@ -81,61 +81,63 @@ static void draw_polygon_element(DianUI_BaseElement *self)
     el->base.w = maxX - minX;
     el->base.h = maxY - minY;
 
-    int posX = el->base.x - (el->base.w / 2);
-    int posY = el->base.y - (el->base.h / 2);
+    int16_t posX = el->base.x - (el->base.w / 2);
+    int16_t posY = el->base.y - (el->base.h / 2);
 
     // Bezier anchor points for each corner
     DianUI_Point START[4];
     DianUI_Point END[4];
 
-    for (int i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         DianUI_Point currentCorner = {.x = posX + el->corners[i].pos.x, .y = posY + el->corners[i].pos.y};
         DianUI_Point nextCorner = {.x = posX + el->corners[(i + 1) % 4].pos.x, .y = posY + el->corners[(i + 1) % 4].pos.y};
         DianUI_Point previousCorner = {.x = posX + el->corners[(i + 3) % 4].pos.x, .y = posY + el->corners[(i + 3) % 4].pos.y};
-        int roundness = el->corners[i].roundness;
+        uint8_t roundness = el->corners[i].roundness;
 
+        /* Vector normalization needs real fractional math (sqrt), kept as float on purpose. */
         float vx_prev = previousCorner.x - currentCorner.x;
         float vy_prev = previousCorner.y - currentCorner.y;
         float len_prev = sqrtf(vx_prev * vx_prev + vy_prev * vy_prev);
         if (len_prev <= 0.0f)
             len_prev = 1.0f;
-        START[i].x = currentCorner.x + (int)roundf((vx_prev / len_prev) * roundness);
-        START[i].y = currentCorner.y + (int)roundf((vy_prev / len_prev) * roundness);
+        START[i].x = currentCorner.x + (int16_t)roundf((vx_prev / len_prev) * roundness);
+        START[i].y = currentCorner.y + (int16_t)roundf((vy_prev / len_prev) * roundness);
 
         float vx_next = nextCorner.x - currentCorner.x;
         float vy_next = nextCorner.y - currentCorner.y;
         float len_next = sqrtf(vx_next * vx_next + vy_next * vy_next);
         if (len_next <= 0.0f)
             len_next = 1.0f;
-        END[i].x = currentCorner.x + (int)roundf((vx_next / len_next) * roundness);
-        END[i].y = currentCorner.y + (int)roundf((vy_next / len_next) * roundness);
+        END[i].x = currentCorner.x + (int16_t)roundf((vx_next / len_next) * roundness);
+        END[i].y = currentCorner.y + (int16_t)roundf((vy_next / len_next) * roundness);
     }
 
     // Span Buffer
-    int leftWall[screenH];
-    int rightWall[screenH];
-    for (int i = 0; i < screenH; i++)
+    int16_t leftWall[64];
+    int16_t rightWall[64];
+    for (int16_t i = 0; i < screenH; i++)
     {
         leftWall[i] = 1000;
         rightWall[i] = -1000;
     }
 
     // Rasterization
-    for (int i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         DianUI_Point start = START[i];
         DianUI_Point end = END[i];
         DianUI_Point control = {.x = posX + el->corners[i].pos.x, .y = posY + el->corners[i].pos.y};
 
         // Bezier curve rasterization
-        int total_steps = 14;
-        for (int step = 1; step <= total_steps; step++)
+        const uint8_t total_steps = 14;
+        for (uint8_t step = 1; step <= total_steps; step++)
         {
+            /* t is a 0..1 progress fraction along the curve, kept as float like easing. */
             float t = (float)step / total_steps;
             DianUI_Point curr_p;
-            curr_p.x = (int)roundf((1.0f - t) * (1.0f - t) * start.x + 2.0f * (1.0f - t) * t * control.x + t * t * end.x);
-            curr_p.y = (int)roundf((1.0f - t) * (1.0f - t) * start.y + 2.0f * (1.0f - t) * t * control.y + t * t * end.y);
+            curr_p.x = (int16_t)roundf((1.0f - t) * (1.0f - t) * start.x + 2.0f * (1.0f - t) * t * control.x + t * t * end.x);
+            curr_p.y = (int16_t)roundf((1.0f - t) * (1.0f - t) * start.y + 2.0f * (1.0f - t) * t * control.y + t * t * end.y);
 
             if (curr_p.y >= 0 && curr_p.y < screenH)
             {
@@ -153,9 +155,9 @@ static void draw_polygon_element(DianUI_BaseElement *self)
         // Line segment between corners
         DianUI_Point next_start = START[(i + 1) % 4];
 
-        int startY;
-        int endY;
-        int x1, y1, x2, y2;
+        int16_t startY;
+        int16_t endY;
+        int16_t x1, y1, x2, y2;
 
         if (next_start.y < end.y)
         {
@@ -180,12 +182,12 @@ static void draw_polygon_element(DianUI_BaseElement *self)
             continue;
         }
 
-        for (int y = startY; y <= endY; y++)
+        for (int16_t y = startY; y <= endY; y++)
         {
             if (y < 0 || y >= screenH)
                 continue;
 
-            int x = (int)roundf((float)(y - y1) / (float)(y2 - y1) * (x2 - x1) + x1);
+            int16_t x = (int16_t)roundf((float)(y - y1) / (float)(y2 - y1) * (x2 - x1) + x1);
 
             if (x < leftWall[y])
             {
@@ -199,12 +201,12 @@ static void draw_polygon_element(DianUI_BaseElement *self)
     }
 
     // Scanline filling
-    for (int y = 0; y < screenH; y++)
+    for (int16_t y = 0; y < screenH; y++)
     {
         if (leftWall[y] <= rightWall[y])
         {
-            int x1 = leftWall[y] < 0 ? 0 : leftWall[y];
-            int x2 = rightWall[y] >= screenW ? screenW - 1 : rightWall[y];
+            int16_t x1 = leftWall[y] < 0 ? 0 : leftWall[y];
+            int16_t x2 = rightWall[y] >= screenW ? screenW - 1 : rightWall[y];
 
             if (x1 <= x2)
             {

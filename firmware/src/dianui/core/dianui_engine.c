@@ -5,13 +5,14 @@
 #include "dianui_config.h"
 #include "dianui/elements/dianui_element.h"
 #include "dianui/widget/dianui_widget.h"
+#include "dianui/animation/dianui_animation.h"
 #include <string.h>
 #include <stdint.h>
 
 static DianUI_HAL *hal = NULL;
 
 static DianUI_BaseElement *registry[DIANUI_MAX_ELEMENTS];
-static int element_count = 0;
+static uint8_t element_count = 0;
 
 void dianui_init(DianUI_HAL *hal_ptr)
 {
@@ -33,11 +34,12 @@ void dianui_engine_register(DianUI_BaseElement *el)
 {
     if (element_count >= DIANUI_MAX_ELEMENTS)
         return;
+    }
 
     registry[element_count++] = el;
 }
 
-int dianui_get_screen_width()
+uint16_t dianui_get_screen_width()
 {
     if (!hal)
     {
@@ -48,7 +50,7 @@ int dianui_get_screen_width()
     return hal->width;
 }
 
-int dianui_get_screen_height()
+uint16_t dianui_get_screen_height()
 {
     if (!hal)
     {
@@ -74,7 +76,7 @@ void dianui_render(void)
 {
     bool needs_redraw = false;
 
-    for (int i = 0; i < element_count; i++)
+    for (uint8_t i = 0; i < element_count; i++)
     {
         if (registry[i]->dirty)
         {
@@ -88,7 +90,7 @@ void dianui_render(void)
 
     hal->clear();
 
-    for (int i = 0; i < element_count; i++)
+    for (uint8_t i = 0; i < element_count; i++)
     {
         if (registry[i]->render && registry[i]->visible)
         {
@@ -106,7 +108,7 @@ void dianui_clear(void)
     hal->update();
 
     /* Mark all elements dirty so next render redraws everything */
-    for (int i = 0; i < element_count; i++)
+    for (uint8_t i = 0; i < element_count; i++)
         registry[i]->dirty = true;
 }
 
@@ -115,4 +117,5 @@ void dianui_reset(void)
     element_count = 0;
     dianui_elements_reset();
     dianui_widget_reset();
+    dianui_reset_animations();
 }

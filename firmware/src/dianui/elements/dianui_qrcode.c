@@ -7,11 +7,11 @@
 #include "qrcode_generator.h"
 
 static DianUI_QRCodeElement qr_pool[DIANUI_MAX_QR];
-static int qr_pool_index = 0;
+static uint8_t qr_pool_index = 0;
 
 static void draw_qr_code_element(DianUI_BaseElement *self);
 
-DianUI_QRCodeElement *dianui_create_qr_code(int x, int y, int w, int h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, const char *data)
+DianUI_QRCodeElement *dianui_create_qr_code(int16_t x, int16_t y, int16_t w, int16_t h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, const char *data)
 {
     if (qr_pool_index >= DIANUI_MAX_QR)
     {
@@ -43,11 +43,11 @@ static void draw_qr_code_element(DianUI_BaseElement *self)
     QRCode qrcode;
     qrcode_init(&qrcode, el->data);
 
-    int oldX = self->x;
-    int oldY = self->y;
+    int16_t oldX = self->x;
+    int16_t oldY = self->y;
 
-    int text_height = qrcode.size * 2;
-    int text_width = qrcode.size * 2;
+    uint16_t text_height = qrcode.size * 2;
+    uint16_t text_width = qrcode.size * 2;
 
     if (self->xAnchor == DIANUI_CENTER)
     {
@@ -67,14 +67,14 @@ static void draw_qr_code_element(DianUI_BaseElement *self)
         oldY = self->y + self->h - text_height;
     }
 
-    for (int y = 0; y < qrcode.size; y++)
+    for (uint8_t y = 0; y < qrcode.size; y++)
     {
-        for (int x = 0; x < qrcode.size; x++)
+        for (uint8_t x = 0; x < qrcode.size; x++)
         {
             if (qrcode_getModule(&qrcode, x, y))
             {
-                int px = oldX + x * 2;
-                int py = oldY + y * 2;
+                int16_t px = oldX + x * 2;
+                int16_t py = oldY + y * 2;
 
                 dianui_draw_pixel(px, py, DIANUI_WHITE);
                 dianui_draw_pixel(px + 1, py, DIANUI_WHITE);
@@ -83,8 +83,6 @@ static void draw_qr_code_element(DianUI_BaseElement *self)
             }
         }
     }
-
-    dianui_set_contrast(30);
 }
 
 void dianui_qrcode_reset()

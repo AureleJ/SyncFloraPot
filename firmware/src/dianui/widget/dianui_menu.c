@@ -9,7 +9,7 @@
 #include "math.h"
 
 static DianUI_Menu menu_pool[DIANUI_MAX_MENUS];
-static int menu_pool_index = 0;
+static uint8_t menu_pool_index = 0;
 
 #define DIANUI_ITEM_HEIGHT 15
 #define DIANUI_ITEM_WIDTH 128
@@ -17,9 +17,9 @@ static int menu_pool_index = 0;
 #define DIANUI_ITEM_SELECTED_SHIFT 7
 #define DIANUI_MENU_SHIFT 12
 
-DianUI_Menu *dianui_create_menu(const char *title, DianUI_MenuItem *items, int item_count)
+DianUI_Menu *dianui_create_menu(const char *title, DianUI_MenuItem *items, uint8_t item_count)
 {
-    if (item_count <= 0)
+    if (item_count == 0)
     {
         DIANUI_LOGE("Invalid item count for menu. Must be greater than 0.");
         return 0;
@@ -39,10 +39,10 @@ DianUI_Menu *dianui_create_menu(const char *title, DianUI_MenuItem *items, int i
     menu->prev_selected_index = -1;
     menu->linear_progress = 0.0f;
 
-    for (int i = 0; i < menu->item_count; i++)
+    for (uint8_t i = 0; i < menu->item_count; i++)
     {
-        int x = dianui_get_screen_width() / 2 - DIANUI_ITEM_WIDTH / 2;
-        int y = (dianui_get_screen_height() / 2) - (DIANUI_ITEM_HEIGHT / 2) + i * (DIANUI_ITEM_HEIGHT + DIANUI_ITEM_SPACING) + DIANUI_MENU_SHIFT;
+        int16_t x = dianui_get_screen_width() / 2 - DIANUI_ITEM_WIDTH / 2;
+        int16_t y = (dianui_get_screen_height() / 2) - (DIANUI_ITEM_HEIGHT / 2) + i * (DIANUI_ITEM_HEIGHT + DIANUI_ITEM_SPACING) + DIANUI_MENU_SHIFT;
 
         if (i == 0)
         {
@@ -101,7 +101,7 @@ void dianui_update_menu(DianUI_Menu *menu)
         menu->prev_selected_index = menu->selected_index;
         menu->linear_progress = 0.0f;
 
-        for (int i = 0; i < menu->item_count; i++)
+        for (uint8_t i = 0; i < menu->item_count; i++)
         {
             menu->items[i].start_x = menu->items[i].element->base.x;
             menu->items[i].start_y = menu->items[i].element->base.y;
@@ -120,13 +120,13 @@ void dianui_update_menu(DianUI_Menu *menu)
     float invT = 1.0f - menu->linear_progress;
     float t_eased = 1.0f - invT * invT;
 
-    for (int i = 0; i < menu->item_count; i++)
+    for (uint8_t i = 0; i < menu->item_count; i++)
     {
-        int targetY = (dianui_get_screen_height() / 2) - (DIANUI_ITEM_HEIGHT / 2) + (i - menu->selected_index) * (DIANUI_ITEM_HEIGHT + DIANUI_ITEM_SPACING) + DIANUI_MENU_SHIFT;
+        int16_t targetY = (dianui_get_screen_height() / 2) - (DIANUI_ITEM_HEIGHT / 2) + ((int16_t)i - menu->selected_index) * (DIANUI_ITEM_HEIGHT + DIANUI_ITEM_SPACING) + DIANUI_MENU_SHIFT;
 
-        int targetX = dianui_get_screen_width() / 2 - DIANUI_ITEM_WIDTH / 2;
+        int16_t targetX = dianui_get_screen_width() / 2 - DIANUI_ITEM_WIDTH / 2;
 
-        if (i == menu->selected_index)
+        if ((int16_t)i == menu->selected_index)
         {
             targetX += DIANUI_ITEM_SELECTED_SHIFT;
         }
@@ -134,13 +134,13 @@ void dianui_update_menu(DianUI_Menu *menu)
         float current_y = (float)menu->items[i].start_y + ((float)targetY - (float)menu->items[i].start_y) * t_eased;
         float current_x = (float)menu->items[i].start_x + ((float)targetX - (float)menu->items[i].start_x) * t_eased;
 
-        menu->items[i].element->base.y = (int)(current_y + 0.5f);
-        menu->items[i].element->base.x = (int)(current_x + 0.5f);
+        menu->items[i].element->base.y = (int16_t)(current_y + 0.5f);
+        menu->items[i].element->base.x = (int16_t)(current_x + 0.5f);
         menu->items[i].element->base.dirty = true;
     }
 
-    int selectorToY = 16 + (dianui_get_screen_height() - 16) * menu->selected_index / menu->item_count;
-    menu->scrollbar_indicator->base.y = (int)(menu->scrollbar_indicator->base.y * (1 - t_eased) + selectorToY * t_eased);
+    int16_t selectorToY = 16 + (dianui_get_screen_height() - 16) * menu->selected_index / menu->item_count;
+    menu->scrollbar_indicator->base.y = (int16_t)(menu->scrollbar_indicator->base.y * (1 - t_eased) + selectorToY * t_eased);
     menu->scrollbar_indicator->base.dirty = true;
 }
 

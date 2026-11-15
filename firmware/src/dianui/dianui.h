@@ -2,33 +2,28 @@
  * @file dianui.h
  * @brief Main public header for the DianUI engine.
  *
- * DianUI (DiǎnUI or 點UI) is a lightweight UI engine for embedded systems with monochrome displays.
+ * DianUI (點UI) is a lightweight UI engine for embedded systems with monochrome displays.
  */
 
-#ifndef UI_H
-#define UI_H
+#ifndef DIANUI_H
+#define DIANUI_H
 
-// Core
+/* Core */
 #include "core/dianui_types.h"
 #include "core/dianui_hal.h"
 #include "core/dianui_engine.h"
 #include "core/dianui_time.h"
 
-// Elements
+/* Elements */
 #include "elements/dianui_element.h"
-#include "elements/dianui_icon.h"
-#include "elements/dianui_text.h"
-#include "elements/dianui_shape.h"
-#include "elements/dianui_qrcode.h"
-#include "elements/dianui_polygon.h"
 
-// Widget
-#include "widget/dianui_menu.h"
+/* Widgets */
+#include "widget/dianui_widget.h"
 
-// Animations
+/* Animations */
 #include "animation/dianui_animation.h"
 
-// Pages
+/* Router and Pages */
 #include "pages/dianui_pages.h"
 
-#endif // UI_H
+#endif // DIANUI_H

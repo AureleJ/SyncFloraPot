@@ -3,9 +3,9 @@
 #include <string.h>
 
 static DianUI_Animation animation_pool[DIANUI_MAX_ANIMATIONS];
-static int animation_pool_index = 0;
+static uint8_t animation_pool_index = 0;
 
-DianUI_Animation *dianui_animate_element(DianUI_BaseElement *element, DianUI_AnimationType type, int duration_ms, int delay_ms, int fromValue, int toValue, bool loop, DianUI_EasingType easing)
+DianUI_Animation *dianui_animate_element(DianUI_BaseElement *element, DianUI_AnimationType type, uint32_t duration_ms, uint32_t delay_ms, int16_t fromValue, int16_t toValue, bool loop, DianUI_EasingType easing)
 {
     if (animation_pool_index >= DIANUI_MAX_ANIMATIONS)
         return NULL;
@@ -42,7 +42,7 @@ bool dianui_is_animation_complete(DianUI_Animation *anim)
 
 void dianui_update_animations(uint32_t current_time_ms)
 {
-    for (int i = 0; i < animation_pool_index; i++)
+    for (uint8_t i = 0; i < animation_pool_index; i++)
     {
         DianUI_Animation *anim = &animation_pool[i];
 
@@ -59,7 +59,7 @@ void dianui_update_animations(uint32_t current_time_ms)
             continue;
         }
 
-        int elapsed = current_time_ms - anim->lastUpdate_ms;
+        uint32_t elapsed = current_time_ms - anim->lastUpdate_ms;
         if (elapsed < anim->delay_ms)
             continue;
 
@@ -72,7 +72,7 @@ void dianui_update_animations(uint32_t current_time_ms)
             anim->complete = true;
         }
 
-        int newValue = anim->fromValue + (int)((anim->toValue - anim->fromValue) * progress);
+        int16_t newValue = anim->fromValue + (int16_t)((anim->toValue - anim->fromValue) * progress);
         anim->currentValue = newValue;
 
         if (anim->type == DIANUI_TRANSLATE_X)

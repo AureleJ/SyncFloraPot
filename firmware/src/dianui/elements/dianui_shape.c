@@ -4,8 +4,7 @@
 #include "../core/dianui_renderer.h"
 #include "../core/dianui_config.h"
 #include <string.h>
-
-#include "esp_log.h"
+#include <stdio.h>
 
 static DianUI_RectangleElement rect_pool[DIANUI_MAX_RECTANGLES];
 static uint8_t rect_pool_index = 0;
@@ -22,7 +21,7 @@ static uint8_t circle_pool_index = 0;
 static void draw_shape_rectangle_element(DianUI_BaseElement *self);
 static void draw_shape_circle_element(DianUI_BaseElement *self);
 
-DianUI_RectangleElement *dianui_create_shape_rectangle(int x, int y, int w, int h, int r, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, DianUI_Color color)
+DianUI_RectangleElement *dianui_create_shape_rectangle(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, DianUI_Color color)
 {
     if (rect_pool_index >= DIANUI_MAX_RECTANGLES)
     {
@@ -48,7 +47,7 @@ DianUI_RectangleElement *dianui_create_shape_rectangle(int x, int y, int w, int 
     return el;
 }
 
-DianUI_CircleElement *dianui_create_shape_circle(int x, int y, int r, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, DianUI_Color color)
+DianUI_CircleElement *dianui_create_shape_circle(int16_t x, int16_t y, uint8_t r, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, DianUI_Color color)
 {
     if (circle_pool_index >= DIANUI_MAX_CIRCLES)
     {
@@ -84,33 +83,27 @@ static void draw_shape_rectangle_element(DianUI_BaseElement *self)
 
     DianUI_RectangleElement *el = (DianUI_RectangleElement *)self;
 
-    int radius = ((el->base.w < el->base.h) ? el->base.w / 2 : el->base.h / 2) * el->radius / 100;
+    int16_t radius = ((el->base.w < el->base.h) ? el->base.w / 2 : el->base.h / 2) * el->radius / 100;
 
-    if (el->radius < 0)
+    if (el->radius == 0)
     {
         radius = 0;
     }
-    else if (el->radius > 100)
+    else if (el->radius >= 100)
     {
         radius = (el->base.w < el->base.h) ? el->base.w / 2 : el->base.h / 2;
     }
 
-    for (int i = radius; i < el->base.w - radius; i++)
+    for (int16_t j = radius; j < el->base.h - radius; j++)
     {
-        dianui_draw_pixel(el->base.x + i, el->base.y, el->color);
-        dianui_draw_pixel(el->base.x + i, el->base.y + el->base.h - 1, el->color);
-    }
-    for (int j = radius; j < el->base.h - radius; j++)
-    {
-        dianui_draw_pixel(el->base.x, el->base.y + j, el->color);
-        dianui_draw_pixel(el->base.x + el->base.w - 1, el->base.y + j, el->color);
+        dianui_draw_hline(el->base.x, el->base.x + el->base.w - 1, el->base.y + j, el->color);
     }
 
-    int circle_x = el->base.x + radius;
-    int circle_y = el->base.y + radius;
-    int x = 0;
-    int y = -radius;
-    int d = -radius; 
+    int16_t circle_x = el->base.x + radius;
+    int16_t circle_y = el->base.y + radius;
+    int16_t x = 0;
+    int16_t y = -radius;
+    int16_t d = -radius;
 
     while (x < -y)
     {
@@ -151,9 +144,9 @@ static void draw_shape_circle_element(DianUI_BaseElement *self)
     DianUI_CircleElement *el = (DianUI_CircleElement *)self;
 
     // Mid point circle algorithm
-    int x = 0;
-    int y = -el->radius;
-    int d = -el->radius; 
+    int16_t x = 0;
+    int16_t y = -el->radius;
+    int16_t d = -el->radius;
 
     while (x < -y)
     {

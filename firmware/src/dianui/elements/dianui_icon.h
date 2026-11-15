@@ -16,7 +16,7 @@
  * @param iconSize Size of the icon in pixels (assumes square icons).
  * @return Pointer to the created icon element, or NULL if the icon pool is full.
  */
-DianUI_IconElement *dianui_create_icon(int x, int y, int w, int h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, const uint8_t *iconData, int iconSize);
+DianUI_IconElement *dianui_create_icon(int16_t x, int16_t y, int16_t w, int16_t h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, const uint8_t *iconData, uint8_t iconSize);
 
 /**
  * @brief Reset the icon element pool.

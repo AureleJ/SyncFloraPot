@@ -15,7 +15,7 @@
  * @param color Text color.
  * @return Pointer to the created text element, or NULL if the text pool is full.
  */
-DianUI_TextElement *dianui_create_text(int x, int y, int w, int h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, const char *text, DianUI_Color color);
+DianUI_TextElement *dianui_create_text(int16_t x, int16_t y, int16_t w, int16_t h, DianUI_Anchor xAnchor, DianUI_Anchor yAnchor, const char *text, DianUI_Color color);
 
 /**
  * @brief Add an icon to a text element (displayed before text).
@@ -26,7 +26,7 @@ DianUI_TextElement *dianui_create_text(int x, int y, int w, int h, DianUI_Anchor
  * @param gap Gap between the icon and the text.
  * @return Pointer to the created text element, or NULL if the text pool is full.
  */
-void dianui_add_icon_to_text(DianUI_TextElement *textEl, const uint8_t *iconData, int iconSize, int gap);
+void dianui_add_icon_to_text(DianUI_TextElement *textEl, const uint8_t *iconData, uint8_t iconSize, uint8_t gap);
 
 /**
  * @brief Update the text of a text element.

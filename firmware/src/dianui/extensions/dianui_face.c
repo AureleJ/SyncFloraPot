@@ -87,10 +87,10 @@ static Emotion targetEmotion = IDLE;
 
 static float lookProgress = 1.0f;
 static float nextLookTimer = 0.0f;
-static int startEyePosX = 0;
-static int targetEyePosX = 0;
-static int startEyePosY = 0;
-static int targetEyePosY = 0;
+static int16_t startEyePosX = 0;
+static int16_t targetEyePosX = 0;
+static int16_t startEyePosY = 0;
+static int16_t targetEyePosY = 0;
 
 static float nextBlinkTimer = 0.0f;
 static float blinkProgress = 0.0f;
@@ -100,13 +100,13 @@ static float nextSnoreTimer = 0;
 
 static float emotionsProgress = 1.0f;
 
-static int offset_look_x = 0;
-static int offset_look_y = 0;
-static int offset_snore_y = 0;
+static int16_t offset_look_x = 0;
+static int16_t offset_look_y = 0;
+static int16_t offset_snore_y = 0;
 
-static const int EYE_LEFT_BASE_X = 45;
-static const int EYE_RIGHT_BASE_X = 85;
-static const int EYE_COMMON_BASE_Y = 35;
+static const int16_t EYE_LEFT_BASE_X = 45;
+static const int16_t EYE_RIGHT_BASE_X = 85;
+static const int16_t EYE_COMMON_BASE_Y = 35;
 
 static const DianUI_Corner *const EMOTION_REGISTRY_LEFT[] = {
     [IDLE] = normalEye,
@@ -126,9 +126,10 @@ static const DianUI_Corner *const EMOTION_REGISTRY_RIGHT[] = {
     [ALMOST_DEAD] = almostDeadEyeRight,
     [WINK] = winkRightEye};
 
-static inline int lerp_int(int start, int target, float t)
+/* t is a 0..1 progress fraction, kept as float like easing. */
+static inline int16_t lerp_int(int16_t start, int16_t target, float t)
 {
-    return (int)roundf((float)start + ((float)(target - start) * t));
+    return (int16_t)roundf((float)start + ((float)(target - start) * t));
 }
 
 void dianui_face_init()
@@ -160,7 +161,7 @@ void dianui_interpolate_emotion(DianUI_PolygonElement *polygon, const DianUI_Cor
 {
     DianUI_Corner *currentCorners = polygon->corners;
 
-    for (int i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         currentCorners[i].pos.x = lerp_int(fromCorners[i].pos.x, toCorners[i].pos.x, t);
         currentCorners[i].pos.y = lerp_int(fromCorners[i].pos.y, toCorners[i].pos.y, t);
@@ -324,10 +325,10 @@ void dianui_update_face()
     // UPDATE EMOTION
     dianui_update_emotion(dt);
 
-    int finalLeftEyeX = EYE_LEFT_BASE_X + offset_look_x;
-    int finalRightEyeX = EYE_RIGHT_BASE_X + offset_look_x;
+    int16_t finalLeftEyeX = EYE_LEFT_BASE_X + offset_look_x;
+    int16_t finalRightEyeX = EYE_RIGHT_BASE_X + offset_look_x;
 
-    int finalCommonEyeY = EYE_COMMON_BASE_Y + offset_look_y + offset_snore_y;
+    int16_t finalCommonEyeY = EYE_COMMON_BASE_Y + offset_look_y + offset_snore_y;
 
     leftEye->base.x = finalLeftEyeX;
     rightEye->base.x = finalRightEyeX;

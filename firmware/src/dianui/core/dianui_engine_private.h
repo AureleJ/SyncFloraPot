@@ -16,14 +16,14 @@ void dianui_engine_register(DianUI_BaseElement *el);
  *
  * @return The width of the screen.
  */
-int dianui_get_screen_width();
+uint16_t dianui_get_screen_width();
 
 /**
  * @brief Get the height of the screen.
  *
  * @return The height of the screen.
  */
-int dianui_get_screen_height();
+uint16_t dianui_get_screen_height();
 
 /**
  * @brief Get the HAL instance.
