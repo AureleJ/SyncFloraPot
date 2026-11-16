@@ -32,7 +32,15 @@ DianUI_HAL *dianui_engine_get_hal()
 
 void dianui_engine_register(DianUI_BaseElement *el)
 {
+    if (!el)
+    {
+        DIANUI_LOGE("DianUI element is NULL. Cannot register.");
+        return;
+    }
+    
     if (element_count >= DIANUI_MAX_ELEMENTS)
+    {
+        DIANUI_LOGE("DianUI engine is full. Cannot register more elements.");
         return;
     }
 
@@ -104,6 +112,12 @@ void dianui_render(void)
 
 void dianui_clear(void)
 {
+    if (!hal)
+    {
+        DIANUI_LOGE("DianUI HAL not initialized. Call dianui_init() first.");
+        return;
+    }
+
     hal->clear();
     hal->update();
 
