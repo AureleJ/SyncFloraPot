@@ -37,6 +37,22 @@ DianUI_IconElement *dianui_create_icon(int16_t x, int16_t y, int16_t w, int16_t 
     return el;
 }
 
+DianUI_IconElement *dianui_update_icon(DianUI_IconElement *icon, const uint8_t *iconData, uint8_t iconSize)
+{
+    if (!icon || !iconData || iconSize == 0)
+    {
+        DIANUI_LOGE("Invalid icon or icon data");
+        return NULL;
+    }
+
+    icon->iconData = iconData;
+    icon->iconSize = iconSize;
+    icon->base.dirty = true;
+
+    return icon;
+}
+
+
 static void draw_icon_element(DianUI_BaseElement *self)
 {
     if (!self)
