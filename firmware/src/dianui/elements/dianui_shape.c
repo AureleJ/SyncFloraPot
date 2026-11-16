@@ -73,6 +73,18 @@ DianUI_CircleElement *dianui_create_shape_circle(int16_t x, int16_t y, uint8_t r
     return el;
 }
 
+void dianui_shape_set_border(DianUI_BaseElement *el, bool border)
+{
+    if (!el)
+    {
+        DIANUI_LOGE("DianUI element is NULL.");
+        return;
+    }
+
+    el->border = border;
+    el->dirty = true;
+}
+
 static void draw_shape_rectangle_element(DianUI_BaseElement *self)
 {
     if (!self)
@@ -125,11 +137,19 @@ static void draw_shape_rectangle_element(DianUI_BaseElement *self)
 
         dianui_draw_pixel(circle_x + x + el->base.w - radius * 2 - 1, circle_y - y + el->base.h - radius * 2 - 1, el->color); // Bottom-right-top
         dianui_draw_pixel(circle_x - y + el->base.w - radius * 2 - 1, circle_y + x + el->base.h - radius * 2 - 1, el->color); // Bottom-right-bottom
-        
+
         dianui_draw_pixel(circle_x - x, circle_y - y + el->base.h - radius * 2 - 1, el->color); // Bottom-left-top
         dianui_draw_pixel(circle_x + y, circle_y + x + el->base.h - radius * 2 - 1, el->color); // Bottom-left-bottom
 
         x++;
+    }
+
+    if (el->base.border)
+    {
+        dianui_draw_hline(el->base.x, el->base.x + el->base.w - 1, el->base.y, DIANUI_WHITE);                  // Top
+        dianui_draw_hline(el->base.x, el->base.x + el->base.w - 1, el->base.y + el->base.h - 1, DIANUI_WHITE); // Bottom
+        dianui_draw_vline(el->base.x, el->base.y, el->base.y + el->base.h - 1, DIANUI_WHITE);                  // Left
+        dianui_draw_vline(el->base.x + el->base.w - 1, el->base.y, el->base.y + el->base.h - 1, DIANUI_WHITE); // Right
     }
 }
 
@@ -160,14 +180,22 @@ static void draw_shape_circle_element(DianUI_BaseElement *self)
             d += 2 * x + 1;
         }
 
-        dianui_draw_pixel(el->base.x + x, el->base.y + y, el->color);
-        dianui_draw_pixel(el->base.x - x, el->base.y + y, el->color);
-        dianui_draw_pixel(el->base.x + x, el->base.y - y, el->color);
-        dianui_draw_pixel(el->base.x - x, el->base.y - y, el->color);
-        dianui_draw_pixel(el->base.x + y, el->base.y + x, el->color);
-        dianui_draw_pixel(el->base.x - y, el->base.y + x, el->color);
-        dianui_draw_pixel(el->base.x + y, el->base.y - x, el->color);
-        dianui_draw_pixel(el->base.x - y, el->base.y - x, el->color);
+        dianui_draw_hline(el->base.x - x, el->base.x + x, el->base.y + y, el->color);
+        dianui_draw_hline(el->base.x - x, el->base.x + x, el->base.y - y, el->color);
+        dianui_draw_hline(el->base.x + y, el->base.x - y, el->base.y + x, el->color);
+        dianui_draw_hline(el->base.x + y, el->base.x - y, el->base.y - x, el->color);
+
+        if (el->base.border)
+        {
+            dianui_draw_pixel(el->base.x - x, el->base.y + y, DIANUI_WHITE);
+            dianui_draw_pixel(el->base.x + x, el->base.y + y, DIANUI_WHITE);
+            dianui_draw_pixel(el->base.x - x, el->base.y - y, DIANUI_WHITE);
+            dianui_draw_pixel(el->base.x + x, el->base.y - y, DIANUI_WHITE);
+            dianui_draw_pixel(el->base.x + y, el->base.y + x, DIANUI_WHITE);
+            dianui_draw_pixel(el->base.x - y, el->base.y + x, DIANUI_WHITE);
+            dianui_draw_pixel(el->base.x + y, el->base.y - x, DIANUI_WHITE);
+            dianui_draw_pixel(el->base.x - y, el->base.y - x, DIANUI_WHITE);
+        }
 
         x++;
     }

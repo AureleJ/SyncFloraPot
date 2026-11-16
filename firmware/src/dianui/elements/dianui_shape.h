@@ -11,4 +11,6 @@ DianUI_CircleElement *dianui_create_shape_circle(int16_t x, int16_t y, uint8_t r
  */
 void dianui_shape_reset();
 
+void dianui_shape_set_border(DianUI_BaseElement *el, bool border);
+
 #endif // DIANUI_SHAPE_H
