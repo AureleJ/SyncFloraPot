@@ -5,6 +5,6 @@
 #include "freertos/task.h"
 #include "driver/gpio.h"
 
-void srv_button_init(gpio_num_t button_pin);
+void srv_button_init(void);
 
 #endif // SRV_BUTTON_H

@@ -5,10 +5,13 @@
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "core/button_state.h"
+#include "config.h"
 
 static const char *TAG = "SRV_BUTTON";
 static TaskHandle_t srv_button_task_handle = NULL;
 QueueHandle_t button_event_queue = NULL;
+
+gpio_num_t button_pin = BUTTON_GPIO_PIN;
 
 static void IRAM_ATTR button_isr_handler(void *arg)
 {
@@ -20,7 +23,7 @@ static void IRAM_ATTR button_isr_handler(void *arg)
     }
 }
 
-void srv_button_task(void *pvParameters)
+static void srv_button_task(void *pvParameters)
 {
     while (1)
     {
@@ -49,11 +52,14 @@ void srv_button_task(void *pvParameters)
             }
         }
 
-        xQueueSend(button_event_queue, &event, 0);
+        if (event != BTN_EVENT_NONE)
+        {
+            xQueueSend(button_event_queue, &event, 0);
+        }
     }
 }
 
-void srv_button_init(gpio_num_t button_pin)
+void srv_button_init(void)
 {
     button_init(button_pin);
 
