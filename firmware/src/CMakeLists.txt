@@ -1,51 +1,71 @@
+set(SRCS_CORE
+    "main.c"
+    "core/sensor_state.c"
+    "core/system_state.c"
+)
+
+set(SRCS_VEIWS
+    "views/view_home.c"
+    "views/view_settings.c"
+    "views/view_loading.c"
+    "views/view_about.c"
+    "views/view_provisionning.c"
+    "views/view_connecting.c"
+    "views/view_error.c"
+)
+
+set(SRCS_SERVICES
+    "services/srv_display.c"
+    "services/srv_hydration.c"
+    "services/srv_internet.c"
+    "services/srv_monitoring.c"
+    "services/srv_button.c"
+    "network/wifi_manager.c"
+)
+
+set(SRCS_DRIVERS
+    "drivers/adc_manager/adc_manager.c"
+    "drivers/i2c_manager/i2c_manager.c"
+    "drivers/display/display.c"
+    "drivers/ldr/ldr.c"
+    "drivers/button/button.c"
+    "drivers/moisture/moisture.c"
+    "drivers/pump/pump.c"
+    "drivers/ultrasonic/ultrasonic.c"
+)
+
+set(SRCS_DIANUI
+    "dianui/core/dianui_engine.c"
+    "dianui/core/dianui_renderer.c"
+    "dianui/core/dianui_log.c"
+    "dianui/core/dianui_time.c"
+    "dianui/assets/dianui_font.c"
+    "dianui/elements/dianui_element.c"
+    "dianui/elements/dianui_icon.c"
+    "dianui/elements/dianui_qrcode.c"
+    "dianui/elements/dianui_shape.c"
+    "dianui/elements/dianui_text.c"
+    "dianui/elements/dianui_polygon.c"
+    "dianui/widget/dianui_menu.c"
+    "dianui/widget/dianui_widget.c"
+    "dianui/animation/dianui_animation.c"
+    "dianui/extensions/dianui_face.c"
+    "dianui/pages/dianui_pages.c"
+)
+
+set(SRCS_EXT
+    "../lib/qrcode/qrcode_generator.c"
+)
+
 idf_component_register(
-    SRCS
-        "main.c"
-        "core/sensor_state.c"
-        "services/srv_display.c"
-        "services/srv_hydration.c"
-        "services/srv_internet.c"
-        "services/srv_monitoring.c"
-        "network/wifi_manager.c"
-        "drivers/adc_manager/adc_manager.c"
-        "drivers/i2c_manager/i2c_manager.c"
-        "drivers/display/display.c"
-        # "drivers/dht11/dht11.c"
-        "drivers/ldr/ldr.c"
-        "drivers/moisture/moisture.c"
-        "drivers/pump/pump.c"
-        "drivers/ultrasonic/ultrasonic.c"
-        "dianui/core/dianui_engine.c"
-        "dianui/core/dianui_renderer.c"
-        "dianui/core/dianui_log.c"
-        "dianui/elements/dianui_element.c"
-        "dianui/elements/dianui_icon.c"
-        "dianui/elements/dianui_qrcode.c"
-        "dianui/elements/dianui_shape.c"
-        "dianui/elements/dianui_text.c"
-        "dianui/elements/dianui_polygon.c"
-        "dianui/animation/dianui_animation.c"
-        "dianui/animation/dianui_easing.c"
-        "dianui/extensions/dianui_face.c"
-        "dianui/pages/dianui_pages.c"
-        "../lib/qrcode/qrcode_generator.c"
-    INCLUDE_DIRS
+    SRCS 
+        ${SRCS_CORE}
+        ${SRCS_SERVICES}
+        ${SRCS_DRIVERS}
+        ${SRCS_DIANUI}
+        ${SRCS_EXT}
+        ${SRCS_VEIWS}
+    INCLUDE_DIRS 
         "."
-        "core"
-        "services"
-        "network"
-        "drivers"
-        "drivers/adc_manager"
-        # "drivers/dht11"
-        "drivers/display"
-        "drivers/ldr"
-        "drivers/moisture"
-        "drivers/pump"
-        "drivers/ultrasonic"
-        "dianui"
-        "dianui/core"
-        "dianui/elements"
-        "dianui/animation"
-        "dianui/extensions"
         "../lib/qrcode"
 )
