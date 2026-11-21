@@ -16,9 +16,9 @@ static const char *TAG = "SRV_DISPLAY";
 
 // HAL Funcs
 static void _set_contrast(uint8_t contrast) { display_set_contrast(contrast); }
-static void _set_hline(int x1, int x2, int y, DianUI_Color color) { display_set_hline(x1, x2, y, color == DIANUI_WHITE); }
-static void _set_vline(int x, int y1, int y2, DianUI_Color color) { display_set_vline(x, y1, y2, color == DIANUI_WHITE); }
-static void _set_pixel(int x, int y, DianUI_Color color) { display_set_pixel(x, y, color == DIANUI_WHITE); }
+static void _set_hline(int16_t x1, int16_t x2, int16_t y, DianUI_Color color) { display_set_hline(x1, x2, y, color == DIANUI_WHITE); }
+static void _set_vline(int16_t x, int16_t y1, int16_t y2, DianUI_Color color) { display_set_vline(x, y1, y2, color == DIANUI_WHITE); }
+static void _set_pixel(int16_t x, int16_t y, DianUI_Color color) { display_set_pixel(x, y, color == DIANUI_WHITE); }
 static void _clear(void) { display_clear(); }
 static void _update(void) { display_update(); }
 static void _log(const char *level, const char *message) { ESP_LOGI(TAG, "[DianUI %s] %s", level, message); }
@@ -29,7 +29,8 @@ static const DianUI_Page *const pages[VIEW_ID_COUNT] = {
     &view_loading,
     &view_about,
     &view_provisionning,
-    &view_error
+    &view_error,
+    &view_connecting
 };
 
 // Task
