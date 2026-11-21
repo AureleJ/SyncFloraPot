@@ -9,9 +9,11 @@
 
 void display_init(void);
 
-void display_set_pixel(int x, int y, bool color);
+void display_set_pixel(int16_t x, int16_t y, bool color);
 
-void display_set_hline(int x1, int x2, int y, bool color);
+void display_set_hline(int16_t x1, int16_t x2, int16_t y, bool color);
+
+void display_set_vline(int16_t x, int16_t y1, int16_t y2, bool color);
 
 void display_clear(void);
 
