@@ -34,9 +34,9 @@ esp_err_t button_init(gpio_num_t button_pin_arg)
     return ESP_OK;
 }
 
-uint32_t currentPressTime = 0;
-uint32_t lastPressTime = 0;
-bool button_pressed = false;
+static uint32_t current_press_time = 0;
+static uint32_t last_press_time = 0;
+static bool button_pressed = false;
 
 bool button_is_pressed()
 {
@@ -46,11 +46,11 @@ bool button_is_pressed()
         return false;
     }
 
-    currentPressTime = esp_timer_get_time() / 1000;
+    current_press_time = esp_timer_get_time() / 1000;
 
-    if (currentPressTime - lastPressTime > 30)
+    if (current_press_time - last_press_time > 30)
     {
-        lastPressTime = currentPressTime;
+        last_press_time = current_press_time;
         button_pressed = (gpio_get_level(button_pin) == 0);
     }
 
