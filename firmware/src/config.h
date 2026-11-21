@@ -21,10 +21,14 @@
 #define LDR_NIGHT_THRESHOLD 15
 #define MOISTURE_DRY_THRESHOLD 5
 #define MOISTURE_HALF_DRY_THRESHOLD 15
-#define WATER_LEVEL_MIN_THRESHOLD 4.5f
-#define WATER_LEVEL_MAX_THRESHOLD 1.5f
+#define WATER_LEVEL_MIN_THRESHOLD 5.7f
+#define WATER_LEVEL_MAX_THRESHOLD 2.0f
+#define MOISTURE_TARGET_THRESHOLD 50
 
 // Timings
-#define MONITORING_INTERVAL_MS 1000 // Interval between sensor readings
+#define MONITORING_INTERVAL_MS 1000 // Interval between sensor readings (1s)
+#define MQTT_PUBLISH_INTERVAL_MS 10000 // Interval between MQTT publishes (10s)
+#define PUMP_WATERING_COOLDOWN_MS 10000 // Cooldown for pump (10s)
+#define PUMP_WATERING_MAX_DURATION_MS 5000 // Max watering duration (5s)
 
 #endif // CONFIG_H
