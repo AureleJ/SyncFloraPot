@@ -1,6 +1,6 @@
-#ifndef TASK_WATERING_H
-#define TASK_WATERING_H
+#ifndef SRV_HYDRATION_H
+#define SRV_HYDRATION_H
 
-void task_watering(void *pvParameters);
+void srv_hydration_init(void);
 
-#endif // TASK_WATERING_H
+#endif // SRV_HYDRATION_H
