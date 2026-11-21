@@ -26,6 +26,9 @@ esp_err_t adc_manager_init(void)
     }
 
     s_initialized = true;
+    
+    ESP_LOGI(TAG, "OK");
+    
     return ESP_OK;
 }
 
