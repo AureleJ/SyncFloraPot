@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS pots (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   location TEXT NOT NULL,
+  device_id TEXT UNIQUE NOT NULL,
+  species TEXT NOT NULL,
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT now()
 );
@@ -28,7 +30,7 @@ CREATE TABLE IF NOT EXISTS metrics (
   pot_id UUID NOT NULL REFERENCES pots(id) ON DELETE CASCADE,
   soil_moisture DOUBLE PRECISION,
   light DOUBLE PRECISION,
-  water_level_state TEXT,
+  water_level DOUBLE PRECISION,
   pump_state BOOLEAN
 );
 
