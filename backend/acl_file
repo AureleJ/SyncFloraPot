@@ -1,0 +1,5 @@
+user backend_server
+topic readwrite syncflorapot/pots/+
+topic readwrite syncflorapot/commands/+
+
+pattern write syncflorapot/pots/%u
