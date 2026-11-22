@@ -1,29 +1,50 @@
 #include "views.h"
+#include "core/system_state.h"
 
-DianUI_TextElement *loadingTimer = 0;
+static DianUI_RectangleElement *loadingBarFill = 0;
+static float loading_timer;
 
 static void view_loading_enter(void)
 {
-    DianUI_TextElement *loadingText = dianui_create_text(0, 25, 128, 8, DIANUI_CENTER, DIANUI_CENTER, "SyncFloraPot", DIANUI_WHITE);
-    DianUI_TextElement *loadingText2 = dianui_create_text(0, 35, 128, 8, DIANUI_CENTER, DIANUI_CENTER, "Loading...", DIANUI_WHITE);
-    loadingTimer = dianui_create_text(0, 45, 128, 8, DIANUI_CENTER, DIANUI_CENTER, "5.0s", DIANUI_WHITE);
+    loading_timer = 3.0f;
+    dianui_create_text(0, 15, 128, 8, DIANUI_CENTER, DIANUI_CENTER, "SyncFloraPot", DIANUI_WHITE);
+    DianUI_RectangleElement *loadingBar = dianui_create_shape_rectangle(0, 30, 128, 6, 10, DIANUI_LEFT, DIANUI_CENTER, DIANUI_BLACK);
+    dianui_shape_set_border((DianUI_BaseElement *)loadingBar, true);
+    loadingBarFill = dianui_create_shape_rectangle(1, 31, 1, 4, 0, DIANUI_LEFT, DIANUI_CENTER, DIANUI_WHITE);
 }
-
-static float loading_timer = 5.0f;
-
-static char timer_buf[16];
 
 static void view_loading_update(float dt)
 {
     loading_timer -= dt;
 
-    snprintf(timer_buf, sizeof(timer_buf), "%.1fs", loading_timer);
-    dianui_update_text(loadingTimer, timer_buf);
+    if (loading_timer < 0.0f)
+    {
+        loading_timer = 0.0f;
+    }
+
+    system_state_t current_state = system_state_get();
+
+    loadingBarFill->base.w = (int)((1.0f - loading_timer / 3.0f) * 126.0f);
+    loadingBarFill->base.dirty = true;
 
     if (loading_timer <= 0.0f)
     {
-        loading_timer = 0.0f;
-        dianui_router_push(VIEW_ID_PROVISIONNING);
+        if (current_state == SYS_STATE_PROVISIONING)
+        {
+            dianui_router_push(VIEW_ID_PROVISIONNING);
+        }
+        else if (current_state == SYS_STATE_CONNECTING)
+        {
+            dianui_router_push(VIEW_ID_CONNECTING);
+        }
+        else if (current_state == SYS_STATE_CONNECTED)
+        {
+            dianui_router_push(VIEW_ID_HOME);
+        }
+        else
+        {
+            dianui_router_push(VIEW_ID_ERROR);
+        }
     }
 }
 
