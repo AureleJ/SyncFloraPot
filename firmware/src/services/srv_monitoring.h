@@ -1,9 +1,9 @@
-#ifndef TASK_MONITORING_H
-#define TASK_MONITORING_H
+#ifndef SRV_MONITORING_H
+#define SRV_MONITORING_H
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
-void srv_monitoring_task(void *pvParameters);
+void srv_monitoring_init(void);
 
-#endif // TASK_MONITORING_H
+#endif // SRV_MONITORING_H
