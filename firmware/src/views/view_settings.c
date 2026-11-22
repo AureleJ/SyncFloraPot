@@ -1,5 +1,8 @@
 #include "views.h"
 #include "esp_system.h"
+#include "core/message.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
 
 static void test_callback(void)
 {
@@ -21,6 +24,22 @@ static void reboot_callback(void)
     esp_restart();
 }
 
+static void watering_test_callback(void)
+{
+    hydration_msg_t message = {
+        .command = CMD_WATER_DURATION,
+        .duration_ms = 5000
+    };
+    
+    BaseType_t result = xQueueSend(
+        hydration_queue,
+        &message,
+        pdMS_TO_TICKS(100)
+    );
+
+    dianui_router_pop();
+}
+
 static DianUI_Menu *menu;
 static float auto_exit_timer = 10.0f;
 
@@ -32,7 +51,7 @@ static void view_settings_enter(void)
             {.label = "Reset Wi-Fi", .callback = test_callback},
             {.label = "Reset Device", .callback = test_callback},
             {.label = "Reboot", .callback = reboot_callback},
-            {.label = "Watering Test", .callback = test_callback},
+            {.label = "Watering Test", .callback = watering_test_callback},
             {.label = "About", .callback = about_callback},
             {.label = "Back", .callback = exit_callback},
         };
