@@ -10,10 +10,24 @@ static void view_connecting_enter(void)
     statusText = dianui_create_text(0, 30, 128, 8, DIANUI_CENTER, DIANUI_CENTER, "Please wait...", DIANUI_WHITE);
 }
 
+static void view_connecting_update(float dt)
+{
+    system_state_t current_state = system_state_get();
+
+    if (current_state == SYS_STATE_CONNECTED)
+    {
+        dianui_router_push(VIEW_ID_HOME);
+    }
+    else if (current_state == SYS_STATE_ERROR)
+    {
+        dianui_router_push(VIEW_ID_ERROR);
+    }
+}
+
 const DianUI_Page view_connecting = {
     .name = "Connecting",
     .on_enter = view_connecting_enter,
-    .on_update = 0,
+    .on_update = view_connecting_update,
     .on_input = 0,
     .on_exit = 0,
 };
