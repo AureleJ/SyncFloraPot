@@ -4,6 +4,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
-void srv_internet_task(void *pvParameters);
+void srv_internet_init(void);
 
 #endif // SRV_INTERNET_H
